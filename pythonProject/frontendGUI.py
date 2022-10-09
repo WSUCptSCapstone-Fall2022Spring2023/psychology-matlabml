@@ -1,28 +1,32 @@
 """
 This file contains the frontend for the application.
 It interfaces with the API Frontend to Local Backend to communicate with the rest of the application's backend.
-Currently, running this file opens a small window with a button that displays a message when pushed.
-This has no relevance to the project and is simply for learning tkinter.
+This app does not interface with the backend yet.
 """
 
 from tkinter import *  # import tkinter
 
-# import API_Frontend_to_Local_Backend
-
 main = Tk()  # creates the main window for the GUI
-
+main.geometry('600x350')
 
 # function that is run whenever the button is clicked
 def button_one_clicked():
-    text = Label(main, text="you clicked the button!")  # create label widget
-    text.pack()
+    text = Label(main, text="This Feature Coming Soon!")  # create label widget
+    text.place(x=225, y=200)
 
 
-text = "push the button"
-text_Label = Label(main, text=text)  # creates label widget
-text_Label.pack()  # packes label widget
 
-button_one = Button(main, text="new button", fg="blue", command=button_one_clicked)  # creates a button widget
-button_one.pack()  # uses the pack method to put the button in the GUI
 
-main.mainloop()  # Creates the loop
+homeButton = Button(main, text="Home", fg="blue", command=button_one_clicked)  # creates a button widget
+homeButton.place(x=0, y=0)  # uses the pack method to put the button in the GUI
+
+buildButton = Button(main, text="Build Model", fg="blue", command=button_one_clicked)  # creates a button widget
+buildButton.place(x=42, y=0)  # uses the pack method to put the button in the GUI
+
+testButton = Button(main, text="Test Model", fg="blue", command=button_one_clicked)  # creates a button widget
+testButton.place(x=115, y=0)  # uses the pack method to put the button in the GUI
+
+predictButton = Button(main, text="Test Model", fg="blue", command=button_one_clicked)  # creates a button widget
+predictButton.place(x=181, y=0)  # uses the pack method to put the button in the GUI
+
+main.mainloop()  # Creates the window loop
