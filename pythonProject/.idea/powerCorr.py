@@ -19,6 +19,7 @@ def powerCorr(psdTrls):
     #-----STEP 1-----#
     # Find empty events
     #empt = cellfun(@isempty, psdTrls)
+    empt = [ isempty(element) for element in psdTrls ]
     #-----STEP 2-----#
     # Get number of bands from .relPow field in first psdTrls cell that isn't
     # empty
