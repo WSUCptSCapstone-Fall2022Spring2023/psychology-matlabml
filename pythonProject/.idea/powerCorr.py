@@ -18,8 +18,13 @@
 def powerCorr(psdTrls):
     #-----STEP 1-----#
     # Find empty events
-    #empt = cellfun(@isempty, psdTrls)
+
+    # Matlab version
+    # empt = cellfun(@isempty, psdTrls)
+
+    # Python Version
     empt = [ isempty(element) for element in psdTrls ]
+
     #-----STEP 2-----#
     # Get number of bands from .relPow field in first psdTrls cell that isn't
     # empty
@@ -30,6 +35,8 @@ def powerCorr(psdTrls):
     # r = cell(1,nEvents);
     # p = cell(1,nEvents);
     # rVect = cell(1,nEvents);
+
+    # ISSUE: Must create a python function for logicFind
 
     #-----STEP 3-----#
     # Go through each event and all bands getting correlations of all channels
