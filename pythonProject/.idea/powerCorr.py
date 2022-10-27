@@ -16,5 +16,40 @@
 #   for the following correlations: 1-2, 1-3, 1-4, 2-3, 2-4, and 3-4.
 #____________
 def powerCorr(psdTrls):
+    #-----STEP 1-----#
     # Find empty events
+    #empt = cellfun(@isempty, psdTrls)
+    #-----STEP 2-----#
+    # Get number of bands from .relPow field in first psdTrls cell that isn't
+    # empty
+
+    # MATLAB CODE
+    # nBands = size(psdTrls{1,logicFind(0,empt,'==','first')}.relPow,1);
+    # nEvents = size(psdTrls,2);
+    # r = cell(1,nEvents);
+    # p = cell(1,nEvents);
+    # rVect = cell(1,nEvents);
+
+    #-----STEP 3-----#
+    # Go through each event and all bands getting correlations of all channels
+    # to eachother
+
+
+    # MATLAB CODE
+    #for iE = logicFind(0,empt,'==')
+    #if size(psdTrls{1,iE}.Pow,3) > 1
+    #    for iB = 1:nBands
+    #        % Calculate correlations
+    #        [r{1,iE}(:,:,iB),p{1,iE}(:,:,iB)] = corrcoef(squeeze(psdTrls{1,iE}.relPow(iB,:,:))');
+    #        # Extract just lower half of correlation matrix
+    #        thisR = squeeze(r{1,iE}(:,:,iB));
+    #        # Place in rVect which will be ordered by column then row (i.e. all
+    #        # rows of column one, then 2, etc.)
+    #        rVect{1,iE}(:,iB) = thisR(logicFind(0,triu(thisR),'=='));
+    #    end
+    #else
+    #    r{1,iE} = NaN;
+    #    rVect{1,iE} = NaN;
+    #end
+#end
     return [r, rVect]
