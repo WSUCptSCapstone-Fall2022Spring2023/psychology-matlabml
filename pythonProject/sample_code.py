@@ -2,7 +2,7 @@
 # Goal: Predict which animals are controls (CON) vs exposed to adolescent alcohol (AE)
 import numpy as np
 #Step 1: Preprocess data
-filecycle('C:...')
+filecycle('scb', ['.mat'], [], 'C:...')
 
 
 #Step 3/4: Organize Data

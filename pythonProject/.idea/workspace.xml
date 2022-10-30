@@ -5,9 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="37cacdca-1889-4f74-b8be-7000510817fb" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/fileCycle.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sample_code.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Print_pl2.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cfg.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cohComp.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/scbParamsMulti.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/spectcompbase.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fileCycle.py" beforeDir="false" afterPath="$PROJECT_DIR$/fileCycle.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_code.py" beforeDir="false" afterPath="$PROJECT_DIR$/sample_code.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

@@ -38,6 +38,7 @@ def fileCycle(fun, fType, files, sdir):
             LFPTs,trls,clnTrls,relPower,psdTrls,coh,stdPower,stdCoh = spectcompbase(cfg)
 
             #TODO close files. clear all variables except files, i, sdir, and fun?
+            files[i].close()
 
             timeElapsed = time.time() - t # calculate time elapsed
 
@@ -60,3 +61,23 @@ def fileCycle(fun, fType, files, sdir):
             LFPTs,chk_nan,zeroedChannel,clnTrls,clnEvents,trls,adfreq = preProcess(LFPTs,adfreq,dsf,thresh,onset,offset,minInt,eoi,eventTs)
             # TODO save data to file. try numpy routines https://numpy.org/doc/stable/reference/routines.io.html
             # TODO close files. clear all variables except files, i, sdir, and fun?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
