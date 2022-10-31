@@ -30,9 +30,27 @@ def logicFind(x, data, op, position="all"):
 # end
 
 # PYTHON CODE #
-if position not "all" and position not "first" amd position not "last":
-    print("Error " + position + " is not a valid input for position")
+    if position not "all" and position not "first" amd position not "last":
+        print("Error " + position + " is not a valid input for position")
 
-allIdx = 1:np.size(data)
-if op is "=="
-    continue
+    allIdx = list(range(1, np.size(data))
+    if op is "==":
+        inds = allIdx[data == x]
+    if op is "<=":
+        inds = allIdx[data <= x]
+    if op is ">=":
+        inds = allIdx[data >= x]
+    if op is "<":
+        inds = allIdx[data < x] 
+    if op is "!=":
+        inds = allIdx[data != x]
+    if position is "first":
+        if isempty(inds):
+            inds = []
+        else:
+            inds = inds[1]
+    if position is "last":
+        if isempty(inds):
+            inds = []
+        else:
+            inds = inds[-1]
