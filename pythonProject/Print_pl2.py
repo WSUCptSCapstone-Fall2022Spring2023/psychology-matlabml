@@ -9,6 +9,8 @@ import os
 import sys
 import warnings
 import ctypes
+from scipy.signal import welch
+from matplotlib import pyplot as plt
 from pypl2 import pl2_info, pl2_ad, pl2_spikes, pl2_events, pl2_info
 
 
@@ -56,7 +58,7 @@ if __name__ == "__main__":
     l = []
     channelList = []
     iterator = 0
-    # this loos grabs all channels with counts > 0 and puts them into the list l
+    # this loop grabs all channels with counts > 0 and puts them into the list l
     # the channels are 0-indexed in the file, but numbered in repeating sets of 0-32 in the tuple. channelList appends the actual channel each time a good one is found
     for item in resource.ad:
         if item.n != 0:
@@ -65,20 +67,35 @@ if __name__ == "__main__":
         iterator += 1
     print(l)
 
-
+    # usually 8 channels, representing analyses of different parts of the brain
+    adList = []
+    temp = []
     for i in channelList:
         ad = pl2_ad(filename, i)
 
-        if ad.n == 0:
-            pass
-        else:
-            print("Here's what I found")
-            print("{}".format(ad.adfrequency))
-            print("{}".format(ad.n))
-            print("{}".format(ad.timestamps))
-            print("{}".format(ad.fragmentcounts))
-            for i in range(1, 10):  #len(ad.ad)): there are hundreds of thousands of data points in this tuple, so viewing the first 100 is more feasible for this test
-                print("ad number {}: {}".format(i, ad.ad[i]))
+        print("Here's what I found in Channel {}".format(i-63))
+        print("Frequency: {}".format(ad.adfrequency)) # this number is how many a/d value are recorded per second (frequency of recordings)
+        print("Number of Data Points: {}".format(ad.n)) # total number of data points in the channel
+        print("List of Timestamps: {}".format(ad.timestamps))
+        #print("Number of Fragments: {}".format(ad.fragmentcounts))
+        for j in range(0, 256):  #len(ad.ad)): there are millions of data points in this tuple, so viewing the first 100 is more feasible for this test
+            temp.append(ad.ad[j])
+            print("a/d Number {}: {}".format(j, ad.ad[j]))
+        adList.append(temp)
+        temp = []
+        print('\n')
 
+    #prints two arrays, one of frequencies and one of PSDs. From my understanding these will be used to create a graph.
+    f, Pxx = welch(adList[0])
+    print("Array of sample frequencies: {}".format(f))
+    print("Power spectral density or power spectrum of input array: {}".format(Pxx))
+    plt.plot(f, Pxx)
+    plt.xlabel("Frequency")
+    plt.ylabel("PSD")
+    plt.show()
 
-
+# From my understanding, each a/d number is the LFP at the timeframe when it was recorded. These are recorded over the course of a little over an hour
+# There are about 2000 a/d numbers recorded a second
+# We calculate power at each site, and coherence between sites
+# This means power for each channel (each channel is recorded at a different site) and coherence between channels
+# try using scipy.signal.welch as a replacement for MATLAB's pwelch function

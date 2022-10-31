@@ -43,7 +43,7 @@ def pl2_ad(filename, channel):
         n - total number of data points
         timestamps - tuple of fragment timestamps (one timestamp per fragment, in seconds)
         fragmentcounts - tuple of fragment counts
-        ad - tuple of raw a/d values in volts
+        ad - tuple of raw a/d values in volts (a/d stands for analog to digital)
         
         The returned data is in a named tuple object, so it can be accessed as a normal tuple: 
             >>>res = pl2_ad('data/file.pl2', 0)
