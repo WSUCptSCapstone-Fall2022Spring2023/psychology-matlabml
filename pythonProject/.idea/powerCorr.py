@@ -1,4 +1,4 @@
-
+import logicFind
 
 ## Calculates power correlations within frequency bands across channels
 # INPUTS:
@@ -36,11 +36,14 @@ def powerCorr(psdTrls):
     # p = cell(1,nEvents);
     # rVect = cell(1,nEvents);
 
+    nBands = size(psdTrls{1,logicFind(0,empt, "==", "first")}.relPow,1)
+    nEvents = size(psdTrls,2)
     # ISSUE: Must create a python function for logicFind
 
     #-----STEP 3-----#
     # Go through each event and all bands getting correlations of all channels
     # to eachother
+
 
 
     # MATLAB CODE
