@@ -8,12 +8,19 @@
 # We calculate power at each site, and coherence between sites
 # This means power for each channel (each channel is recorded at a different site) and coherence between channels
 
+# when using sklearn Lasso, it required features and a target as inputs
+# features is the data being passed in, target is what we are trying to predict
+# for this, features would be power and coherence for each data file (lets say the power and coherence of each file, with the target column being if the animal is A or D)
+# maybe organize this into a pandas dataframe?
+
 import os
 import sys
 import warnings
 import ctypes
-from scipy.signal import welch
+from scipy import signal
+from sklearn.linear_model import Lasso
 from matplotlib import pyplot as plt
+import pandas as pd
 from pypl2 import pl2_info, pl2_ad, pl2_spikes, pl2_events, pl2_info
 
 
@@ -83,22 +90,38 @@ if __name__ == "__main__":
         print("Number of Data Points: {}".format(ad.n)) # total number of data points in the channel
         print("List of Timestamps: {}".format(ad.timestamps))
         #print("Number of Fragments: {}".format(ad.fragmentcounts))
-        for j in range(256):# len(ad.ad)): #there are millions of data points in this tuple, so viewing the first 100 or so is more feasible for this test
+        for j in range(len(ad.ad)): #there are millions of data points in this tuple, so viewing the first 100 or so is more feasible for this test
             temp.append(ad.ad[j])
-            print("a/d Number {}: {}".format(j, ad.ad[j]))
+            #print("a/d Number {}: {}".format(j, ad.ad[j]))
         adList.append(temp)
         temp = []
         print('\n')
 
         # try using scipy.signal.welch as a replacement for MATLAB's pwelch function
         # prints two arrays, one of frequencies and one of PSDs. From my understanding these will be used to create a graph.
-        f, Pxx = welch(adList[index])
+        f, Pxx = signal.welch(adList[index])
         print("Array of sample frequencies: {}".format(f))
         print("Power spectral density or power spectrum of input array: {}".format(Pxx))
         plt.plot(f, Pxx)# plot a graph of frequencies on the x-axis and PSDs on the y-axis
         plt.xlabel("Frequency")
         plt.ylabel("PSD")
-        plt.show()# open window displaying graph
+        #plt.show()# open window displaying graph
         index += 1
 
+    # calculate coherence between the first two channels (two parts of the rat brain being studied)
+    # This is essentially the similarity between two brain regions at a given frequency
+    f, Cxy = signal.coherence(adList[0], adList[1])
+    #print("Array of sample frequencies: {}".format(f))
+    print("Magnitude squared coherence of x and y: {}".format(Cxy))
+    plt.plot(f, Cxy)  # plot a graph of frequencies on the x-axis and PSDs on the y-axis
+    plt.xlabel("Frequency")
+    plt.ylabel("Coherence")
+    plt.show()  # open window displaying graph
 
+    f, Cxy = signal.coherence(adList[0], adList[5])
+    #print("Array of sample frequencies: {}".format(f))
+    print("Magnitude squared coherence of x and y: {}".format(Cxy))
+    plt.plot(f, Cxy)  # plot a graph of frequencies on the x-axis and PSDs on the y-axis
+    plt.xlabel("Frequency")
+    plt.ylabel("Coherence")
+    plt.show()  # open window displaying graph
