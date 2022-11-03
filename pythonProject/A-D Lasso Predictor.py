@@ -6,9 +6,9 @@
 # dataframe in the following format (arrays are replaced with random chars for convenience of the example):
 #
 # |   File Name   |   Channel 1 Power    |   Channel 2 Power   | ... |   Channel 8 Power   |   Coherence Between 1 and 2   |   Coherence Between 1 and 3   | ... | Coherence Between 7 and 8   |   A or D   |
-#     A170...                [xyz]                [zyx]                        [xyz]                       [yxz]                   [zyw]                                     [yzs]                    'A'
+#     A170...                [xyz]                [zyx]                        [xyz]                       [yxz]                   [zyw]                                     [yzs]                    1
 #
-#
+# We use 1 to describe A and 0 to describe D in the dataframe
 # Use 80% of the data as training data, keeping 20% as testing Fit the lasso model by using the channel powers and
 # coherences as features, and the 'A or D' column as the target We can also use a series of lambda values to test
 # multiple times to find the best fit Use all of the data to prevent overfitting. We can use os.chdir() to find the
@@ -21,12 +21,17 @@ import os
 import sys
 import warnings
 import ctypes
+import numpy as np
+from statistics import mean
 from scipy import signal
 from sklearn.linear_model import Lasso
+from sklearn.metrics import mean_squared_error
+from sklearn.model_selection import train_test_split
 from matplotlib import pyplot as plt
 from itertools import combinations
 import pandas as pd
 from pypl2 import pl2_info, pl2_ad, pl2_spikes, pl2_events, pl2_info
+
 
 # divide a list l into chunks of length n
 def divide_chunks(l, n):
@@ -96,34 +101,36 @@ if __name__ == "__main__":
                                'Coherence 4 & 7', 'Coherence 4 & 8', 'Coherence 5 & 6', 'Coherence 5 & 7',
                                'Coherence 5 & 8', 'Coherence 6 & 7', 'Coherence 6 & 8', 'Coherence 7 & 8']
 
-
     # Iterate through the dictionary of A files and populate the pandas dataframe with each file's powers
+    # currently trying average of the powers
     # Also, label the row as an 'A' row
     print("Calculating Power for A groups and storing in the dataframe")
     channelNameIterator = 0
     for key in ADict:
-        df.at[key[0], 'A or D'] = 'A'
+        df.at[key[0], 'A or D'] = 1
         f, Pxx = signal.welch(ADict[key].ad)
-        df.at[key[0], dfPowerChannelNames[channelNameIterator]] = Pxx
+        df.at[key[0], dfPowerChannelNames[channelNameIterator]] = mean(Pxx)
         if channelNameIterator < 7:
             channelNameIterator += 1
         else:
             channelNameIterator = 0
 
     # Iterate through the dictionary of D files and populate the pandas dataframe with each file's powers
+    # currently trying average of the powers
     # Also, label the row as a 'D' row
     print("Calculating Power for D groups and storing in the dataframe")
     channelNameIterator = 0
     for key in DDict:
-        df.at[key[0], 'A or D'] = 'D'
+        df.at[key[0], 'A or D'] = 0
         f, Pxx = signal.welch(DDict[key].ad)
-        df.at[key[0], dfPowerChannelNames[channelNameIterator]] = Pxx
+        df.at[key[0], dfPowerChannelNames[channelNameIterator]] = mean(Pxx)
         if channelNameIterator < 7:
             channelNameIterator += 1
         else:
             channelNameIterator = 0
 
     # Iterate through the dictionary of A files and populate the pandas dataframe with each file's coherences
+    # currently trying average of the coherences
     # We need combinations between each chunk of 8 keys in the dictionary
     print("Calculating Coherence for A groups and storing in the dataframe")
     channelNameIterator = 0
@@ -132,13 +139,14 @@ if __name__ == "__main__":
         combList = list(combinations(file, 2))
         for comb in combList:
             f, Cxy = signal.coherence(ADict[comb[0]].ad, ADict[comb[1]].ad)
-            df.at[comb[0][0], dfCoherenceChannelNames[channelNameIterator]] = Pxx
+            df.at[comb[0][0], dfCoherenceChannelNames[channelNameIterator]] = mean(Cxy)
             if channelNameIterator < 27:
                 channelNameIterator += 1
             else:
                 channelNameIterator = 0
 
     # Iterate through the dictionary of D files and populate the pandas dataframe with each file's coherences
+    # currently trying average of the coherences
     # We need combinations between each chunk of 8 keys in the dictionary
     print("Calculating Coherence for D groups and storing in the dataframe")
     channelNameIterator = 0
@@ -147,15 +155,42 @@ if __name__ == "__main__":
         combList = list(combinations(file, 2))
         for comb in combList:
             f, Cxy = signal.coherence(DDict[comb[0]].ad, DDict[comb[1]].ad)
-            df.at[comb[0][0], dfCoherenceChannelNames[channelNameIterator]] = Pxx
+            df.at[comb[0][0], dfCoherenceChannelNames[channelNameIterator]] = mean(Cxy)
             if channelNameIterator < 27:
                 channelNameIterator += 1
             else:
                 channelNameIterator = 0
 
+    #with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+        #print(df)
 
-    with pd.option_context('display.max_rows', None, 'display.max_columns', None):
-        print(df)
+    target = ['A or D']
+    features = ['Channel 1 Power', 'Channel 2 Power', 'Channel 3 Power', 'Channel 4 Power',
+                'Channel 5 Power', 'Channel 6 Power', 'Channel 7 Power', 'Channel 8 Power',
+                'Coherence 1 & 2', 'Coherence 1 & 3', 'Coherence 1 & 4', 'Coherence 1 & 5',
+                'Coherence 1 & 6', 'Coherence 1 & 7', 'Coherence 1 & 8', 'Coherence 2 & 3',
+                'Coherence 2 & 4', 'Coherence 2 & 5', 'Coherence 2 & 6', 'Coherence 2 & 7',
+                'Coherence 2 & 8', 'Coherence 3 & 4', 'Coherence 3 & 5', 'Coherence 3 & 6',
+                'Coherence 3 & 7', 'Coherence 3 & 8', 'Coherence 4 & 5', 'Coherence 4 & 6',
+                'Coherence 4 & 7', 'Coherence 4 & 8', 'Coherence 5 & 6', 'Coherence 5 & 7',
+                'Coherence 5 & 8', 'Coherence 6 & 7', 'Coherence 6 & 8', 'Coherence 7 & 8']
+
+    y = df[target]
+    x = df[features]
+
+    #x = np.array(x.explode()).reshape(len(x), -1)
+
+    # split the data into test and train sets
+    print("Splitting data")
+    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, shuffle=True)
+
+    print("Fitting Data")
+    lambda_val = 0.1
+    lasso = Lasso(lambda_val)
+    lasso.fit(x_train, y_train)
+    y_pred = lasso.predict(x_test)
+    mse_lasso = mean_squared_error(y_pred, y_test)
+    print(("\nLasso MSE with Lambda={} is {}").format(lambda_val, mse_lasso))
+
+
     print("\ndone")
-
-
