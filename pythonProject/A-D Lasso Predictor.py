@@ -246,6 +246,7 @@ if __name__ == "__main__":
     lasso = Lasso(lambda_val)  # create lasso model
     lasso.fit(x_train, y_train)  # fit lasso model to our training data
     y_pred = lasso.predict(x_test)  # make a prediction
+    print("Prediction -> {}".format(y_pred))
     mse_lasso = mean_squared_error(y_pred, y_test)  # calculate the mean squared error of the prediction
     print(("\nLasso MSE with Lambda={} is {}").format(lambda_val, mse_lasso))
 
