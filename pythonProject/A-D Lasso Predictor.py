@@ -128,7 +128,7 @@ if __name__ == "__main__":
         df.at[key[0], 'A or D'] = 1  # set the 'A or D' column value to 1 to represent it being an A column
         f, Pxx = signal.welch(ADict[key].ad)  # Use welch() to calculate the power array from the list of LFPs in ADict
         # use the average of power values because of an error with numpy that needs to be resolved
-        df.at[key[0], dfPowerChannelNames[channelNameIterator]] = mean(Pxx)
+        df.at[key[0], dfPowerChannelNames[channelNameIterator]] = Pxx
         # This if/else check makes sure the channelNameIterator doesn't go past 7, since the list dfPowerChannelNames
         # is only 8 values long (0-indexed)
         if channelNameIterator < 7:
@@ -145,7 +145,7 @@ if __name__ == "__main__":
         df.at[key[0], 'A or D'] = 0  # set the 'A or D' column value to 0 to represent it being a D column
         f, Pxx = signal.welch(DDict[key].ad)  # Use welch() to calculate the power array from the list of LFPs in DDict
         # use the average of power values because of an error with numpy that needs to be resolved
-        df.at[key[0], dfPowerChannelNames[channelNameIterator]] = mean(Pxx)
+        df.at[key[0], dfPowerChannelNames[channelNameIterator]] = np.array(Pxx)
         # This if/else check makes sure the channelNameIterator doesn't go past 7, since the list dfPowerChannelNames
         # is only 8 values long (0-indexed)
         if channelNameIterator < 7:
@@ -174,7 +174,7 @@ if __name__ == "__main__":
             f, Cxy = signal.coherence(ADict[comb[0]].ad, ADict[comb[1]].ad)
 
             # put the mean of the coherence in the right dataframe cell
-            df.at[comb[0][0], dfCoherenceChannelNames[channelNameIterator]] = mean(Cxy)
+            df.at[comb[0][0], dfCoherenceChannelNames[channelNameIterator]] = np.array(Cxy)
 
             # 28 coherence columns
             if channelNameIterator < 27:
@@ -203,7 +203,7 @@ if __name__ == "__main__":
             f, Cxy = signal.coherence(DDict[comb[0]].ad, DDict[comb[1]].ad)
 
             # put the mean of the coherence in the right dataframe cell
-            df.at[comb[0][0], dfCoherenceChannelNames[channelNameIterator]] = mean(Cxy)
+            df.at[comb[0][0], dfCoherenceChannelNames[channelNameIterator]] = np.array(Cxy)
 
             # 28 coherence columns
             if channelNameIterator < 27:
@@ -242,7 +242,7 @@ if __name__ == "__main__":
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, shuffle=True)
 
     print("Fitting Data")
-    lambda_val = 0.1  # set lambda. review documentation for explanation on what this does
+    lambda_val = 0.01  # set lambda. review documentation for explanation on what this does
     lasso = Lasso(lambda_val)  # create lasso model
     lasso.fit(x_train, y_train)  # fit lasso model to our training data
     y_pred = lasso.predict(x_test)  # make a prediction
