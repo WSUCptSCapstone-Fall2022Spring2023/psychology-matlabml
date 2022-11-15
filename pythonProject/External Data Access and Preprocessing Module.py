@@ -4,20 +4,22 @@ class will upload data files to the program and be able to process those data fi
 used by our logic modules. """
 
 import os
+
+import numpy as np
 import pandas as pd
 from scipy import signal
 from itertools import combinations
 from pypl2 import pl2_ad,  pl2_info
-
+from loadingBar import printProgressBar
 
 class AccessData:
-"""Class used to access and process data from a directory of data files into power and coherence data that can be used
-in the program. The method getDataForLasso() can be called to populate data into a pandas dataframe located in this class.
-The class object will hold this dataframe."""
+    """Class used to access and process data from a directory of data files into power and coherence data that can be used
+    in the program. The method getDataForLasso() can be called to populate data into a pandas dataframe located in this class.
+    The class object will hold this dataframe."""
     def __init__(self, sDir = r'C:\Users\aidan.nunn\Documents\Homework\CS 421\SampleSampleData'):
         self.sDir = sDir
         self.fType = '.pl2'  # File type we are looking for
-        self.files = self.getFileNames()
+        self.files = self.__getFileNames()
 
         # Create a pandas dataframe for use later
         # Rows are indexed by file name, and columns are labeled with each data point we want to store.
@@ -49,43 +51,48 @@ The class object will hold this dataframe."""
     def getDataForLasso(self):
         """Main method of this class. When called, it will populate a pandas dataframe in this class with all power
         and coherence values from the data files in the directory pointed at by this class. """
-        os.chdir(self.sDir) # change the current working directory to where our data is stored.
-        channels_list = []  # List to hold 0-indexed channel numbers instead of what is listed in the resource tuples
+        os.chdir(self.sDir)  # change the current working directory to where our data is stored.
+
+        l = len(self.files)
+        printProgressBar(0, l, prefix='Progress:', suffix='Complete', length=50)  # print progress bar to terminal
+        i = 0
 
         #iterate through all files and populate the pandas dataframe with power values
         for filename in self.files:
-            channel_name_iterator = 0  # reset iterator between files
-            file_resource = pl2_info(filename)  # get generic info from a file so we can see the counts of data
+            channels_list = []  # List to hold 0-indexed channel numbers instead of what is listed in the resource tuples
+            channel_number_iterator = 0  # reset iterator between files
+            one_thru_eight_iterator = 0  # iterator to count thru all 8 channels in a file
+            file_resource = pl2_info(filename)  # get generic info from a file so that we can see the counts of data
 
-            for channel in file_resource.ad: # iterate over each channel in a file (8 relevant channels per file)
-                if channel.n > 0: # if a channel has count > 0 then it has data
-                    ad_info = pl2_ad(filename, channel_name_iterator)  # use pl2_ad to get a/d info from a channel
+            for channel in file_resource.ad:  # iterate over each channel in a file (8 relevant channels per file)
+                if channel.n > 0:  # if a channel has count > 0 then it has data
+                    ad_info = pl2_ad(filename, channel_number_iterator)  # use pl2_ad to get a/d info from a channel
+
                     if filename.startswith('A'):  # the filename starts with 'A' if it's in the A group
                         self.__setDataframeCell(filename, 'A or D', 1)  # set the 'A or D' column value to 1 to represent it being an A column
-                        for column in self.dfPowerChannelNames:
-                            Pxx = self.__calculateChannelPower(ad_info.ad)  # Use welch() to calculate the power array from the list of LFPs in ad_info
-                            self.__setDataframeCell(filename, column, Pxx)  # put the power values array in the dataframe
-                        channels_list.append(channel_name_iterator)  # add the channel number to a list for use later
                     if filename.startswith('D'):  # the filename starts with 'D' if it's in the D group
                         self.__setDataframeCell(filename, 'A or D', 0)  # set the 'A or D' column value to 0 to represent it being a D column
-                        for column in self.dfPowerChannelNames:
-                            Pxx = self.__calculateChannelPower(ad_info.ad)  # Use welch() to calculate the power array from the list of LFPs in ad_info
-                            self.__setDataframeCell(filename, column, Pxx)  # put the power values array in the dataframe
-                        channels_list.append(channel_name_iterator)  # add the channel number to a list for use later
-                channel_name_iterator += 1  # iterate to the next 0-indexed channel number
 
+                    Pxx = self.__calculateChannelPower(ad_info.ad)  # Use welch() to calculate the power array from the list of LFPs in ad_info
+                    self.__setDataframeCell(filename, self.dfPowerChannelNames[one_thru_eight_iterator], Pxx)  # put the power values array in the dataframe
+                    one_thru_eight_iterator += 1
+                    channels_list.append(channel_number_iterator)  # add the channel number to a list for use later
+                channel_number_iterator += 1  # iterate to the next 0-indexed channel number
 
             comboList = list(combinations(channels_list, 2))  # get combinations of each 0-indexed channel number
             # iterate through all channel combos and populate the pandas dataframe with coherence values
             for channelCombo, column in zip(comboList, self.dfCoherenceChannelNames):
-                adInfo1 = pl2_ad(filename, channelCombo[0])
-                adInfo2 = pl2_ad(filename, channelCombo[1])
-                Cxy = self.__calculateChannelCoherence(adInfo1.ad, adInfo2.ad)
+                ad_info1 = pl2_ad(filename, channelCombo[0])
+                ad_info2 = pl2_ad(filename, channelCombo[1])
+                Cxy = self.__calculateChannelCoherence(ad_info1.ad, ad_info2.ad)
                 self.__setDataframeCell(filename, column, Cxy)
+
+            printProgressBar(i + 1, l, prefix='Progress:', suffix='Complete', length=50)  # update progress bar
+            i += 1
 
     def __getFileNames(self):
         """Method for getting a list of file names from the directory pointed at by this class"""
-        print("Finding file names")
+        print("Getting file names")
         files = []
         # For each file in a list of files in the directory
         for f in os.listdir(self.sDir):
@@ -116,3 +123,7 @@ The class object will hold this dataframe."""
             print(self.df)
 
 
+if __name__ == "__main__":
+    accessObj = AccessData()
+    accessObj.getDataForLasso()
+    accessObj.printDataFrame()
