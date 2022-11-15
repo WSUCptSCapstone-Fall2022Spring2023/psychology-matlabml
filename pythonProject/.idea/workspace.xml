@@ -5,19 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="37cacdca-1889-4f74-b8be-7000510817fb" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/../Documents/Capstone Project Description.pdf" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Documents/Relevant publications/Doucette 2018_machine learning_binge eating.pdf" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Documents/Relevant publications/Dwiel 2019_machine learning_classify behavior.pdf" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Documents/Relevant publications/Dwiel Henricks 2021 preprint.pdf" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Documents/Relevant publications/Henricks 2019_BSD.pdf" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Documents/Relevant publications/Weimer 2020_Prenatal canabis exposure and decision making.pdf" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Documents/Requirements and Specifications.pdf" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Documents/Solution Approach.pdf" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Sprint 1 Report and Video/Sprint 1 Video.mkv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Sprint 1 Report and Video/sprint_report_template.md" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/A-D Lasso Predictor.py" beforeDir="false" afterPath="$PROJECT_DIR$/A-D Lasso Predictor.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/API Controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/API Controller.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/External Data Access and Preprocessing Module.py" beforeDir="false" afterPath="$PROJECT_DIR$/External Data Access and Preprocessing Module.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
