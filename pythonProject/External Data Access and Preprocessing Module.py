@@ -51,6 +51,7 @@ class AccessData:
     def getDataForLasso(self):
         """Main method of this class. When called, it will populate a pandas dataframe in this class with all power
         and coherence values from the data files in the directory pointed at by this class. """
+        print("Getting data for Lasso")
         os.chdir(self.sDir)  # change the current working directory to where our data is stored.
 
         l = len(self.files)
@@ -103,12 +104,14 @@ class AccessData:
     def __calculateChannelPower(self, ad):
         """Method for calculating the power values of a channel's LFP data. This function is trivial, but necessary
         for making the code more readable. """
+        print("Calculating power")
         f, Pxx = signal.welch(ad)
         return Pxx
 
     def __calculateChannelCoherence(self, ad1, ad2):
         """Method for calculating the coherence values of a channel's LFP data. This function is trivial,
         but necessary for making the code more readable. """
+        print("Calculating coherence")
         f, Cxy = signal.coherence(ad1, ad2)
         return Cxy
 

@@ -5,9 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="37cacdca-1889-4f74-b8be-7000510817fb" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/loadingBar.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/A-D Lasso Predictor.py" beforeDir="false" afterPath="$PROJECT_DIR$/A-D Lasso Predictor.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/External Data Access and Preprocessing Module.py" beforeDir="false" afterPath="$PROJECT_DIR$/External Data Access and Preprocessing Module.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
