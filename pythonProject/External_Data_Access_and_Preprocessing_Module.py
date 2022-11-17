@@ -18,7 +18,7 @@ class AccessData:
     """Class used to access and process data from a directory of data files into power and coherence data that can be used
     in the program. The method getDataForLasso() can be called to populate data into a pandas dataframe located in this class.
     The class object will hold this dataframe."""
-    def __init__(self, sDir = r'C:\Users\aidan.nunn\Documents\Homework\CS 421\SampleSampleData'):
+    def __init__(self, sDir):
         self.sDir = sDir
         self.fType = '.pl2'  # File type we are looking for
         self.files = self.__getFileNames()
@@ -57,12 +57,13 @@ class AccessData:
         print("Getting data for Lasso")
         os.chdir(self.sDir)  # change the current working directory to where our data is stored.
 
-        l = len(self.files)
-        printProgressBar(0, l, prefix='Progress:', suffix='Complete', length=50)  # print progress bar to terminal
-        i = 0
+        #l = len(self.files)
+        #printProgressBar(0, l, prefix='Progress:', suffix='Complete', length=50)  # print progress bar to terminal
+        #i = 0
 
         #iterate through all files and populate the pandas dataframe with power values
         for filename in self.files:
+            print("Processing file {}".format(filename))
             channels_list = []  # List to hold 0-indexed channel numbers instead of what is listed in the resource tuples
             channel_number_iterator = 0  # reset iterator between files
             one_thru_eight_iterator = 0  # iterator to count thru all 8 channels in a file
@@ -70,6 +71,7 @@ class AccessData:
 
             for channel in file_resource.ad:  # iterate over each channel in a file (8 relevant channels per file)
                 if channel.n > 0:  # if a channel has count > 0 then it has data
+                    print("Processing power for channel {}".format(one_thru_eight_iterator+1))
                     ad_info = pl2_ad(filename, channel_number_iterator)  # use pl2_ad to get a/d info from a channel
 
                     if filename.startswith('A'):  # the filename starts with 'A' if it's in the A group
@@ -86,6 +88,7 @@ class AccessData:
             comboList = list(combinations(channels_list, 2))  # get combinations of each 0-indexed channel number
             # iterate through all channel combos and populate the pandas dataframe with coherence values
             for channelCombo, column in zip(comboList, self.dfCoherenceChannelNames):
+                print("Processing coherence for channel pair {}".format(column))
                 ad_info1 = pl2_ad(filename, channelCombo[0])
                 ad_info2 = pl2_ad(filename, channelCombo[1])
                 if ad_info1.adfrequency != ad_info2.adfrequency:
@@ -94,8 +97,8 @@ class AccessData:
                 Cxy = self.__calculateChannelCoherence(ad_info1.ad, ad_info2.ad, ad_info2.adfrequency)
                 self.__setDataframeCell(filename, column, fmean(Cxy))
 
-            printProgressBar(i + 1, l, prefix='Progress:', suffix='Complete', length=50)  # update progress bar
-            i += 1
+            #printProgressBar(i + 1, l, prefix='Progress:', suffix='Complete', length=50)  # update progress bar
+            #i += 1
 
     def __getFileNames(self):
         """Method for getting a list of file names from the directory pointed at by this class"""

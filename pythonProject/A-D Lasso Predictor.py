@@ -18,28 +18,16 @@
 # for Dr. Henrick's initial assignment of creating an A/D binary classifier
 
 # Import Statements
-import os
-import sys
-import warnings
-import ctypes
-import numpy as np
-import gc
-from statistics import mean
-from scipy import signal
 from sklearn.linear_model import Lasso
 from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import train_test_split
-from matplotlib import pyplot as plt
-from itertools import combinations
-import pandas as pd
-from pypl2 import pl2_info, pl2_ad, pl2_spikes, pl2_events, pl2_info
 from External_Data_Access_and_Preprocessing_Module import AccessData
 
 
 # start of the program
 if __name__ == "__main__":
 
-    dataObject = AccessData()
+    dataObject = AccessData(r'C:\Users\aidan.nunn\Documents\Homework\CS 421\Sample Data')
 
     # lists holding the target value we want to predict and the feature values we will use in the prediction
     target = ['A or D']
@@ -63,13 +51,12 @@ if __name__ == "__main__":
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, shuffle=True)
 
     print("Fitting Data")
-    lambda_val = 0.01  # set lambda. review documentation for explanation on what this does
-    lasso = Lasso(lambda_val)  # create lasso model
-    lasso.fit(x_train, y_train)  # fit lasso model to our training data
-    y_pred = lasso.predict(x_test)  # make a prediction
-    for prediction, test in zip(y_pred, y_test):
-        print("Prediction for {} -> {}".format(test, prediction))
-    mse_lasso = mean_squared_error(y_pred, y_test)  # calculate the mean squared error of the prediction
-    print(("\nLasso MSE with Lambda={} is {}").format(lambda_val, mse_lasso))
-
+    lambda_val = [0.000001, 0.0001, 0.005, 0.01, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 1]  # set lambda. review documentation for explanation on what this does
+    for val in lambda_val:
+        lasso = Lasso(val)  # create lasso model
+        lasso.fit(x_train, y_train)  # fit lasso model to our training data
+        y_pred = lasso.predict(x_test)  # make a prediction
+        mse_lasso = mean_squared_error(y_pred, y_test)  # calculate the mean squared error of the prediction
+        print(("\nLasso MSE with Lambda={} is {}").format(val, mse_lasso))
+    print(lasso.coef_)
     print("\ndone")
