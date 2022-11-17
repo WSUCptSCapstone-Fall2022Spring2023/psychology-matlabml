@@ -11,6 +11,8 @@ from scipy import signal
 from itertools import combinations
 from pypl2 import pl2_ad,  pl2_info
 from loadingBar import printProgressBar
+from matplotlib import pyplot as plt
+from statistics import fmean
 
 class AccessData:
     """Class used to access and process data from a directory of data files into power and coherence data that can be used
@@ -47,6 +49,7 @@ class AccessData:
                                         'Coherence 3 & 7', 'Coherence 3 & 8', 'Coherence 4 & 5', 'Coherence 4 & 6',
                                         'Coherence 4 & 7', 'Coherence 4 & 8', 'Coherence 5 & 6', 'Coherence 5 & 7',
                                         'Coherence 5 & 8', 'Coherence 6 & 7', 'Coherence 6 & 8', 'Coherence 7 & 8']
+        self.getDataForLasso()
 
     def getDataForLasso(self):
         """Main method of this class. When called, it will populate a pandas dataframe in this class with all power
@@ -74,8 +77,8 @@ class AccessData:
                     if filename.startswith('D'):  # the filename starts with 'D' if it's in the D group
                         self.__setDataframeCell(filename, 'A or D', 0)  # set the 'A or D' column value to 0 to represent it being a D column
 
-                    Pxx = self.__calculateChannelPower(ad_info.ad)  # Use welch() to calculate the power array from the list of LFPs in ad_info
-                    self.__setDataframeCell(filename, self.dfPowerChannelNames[one_thru_eight_iterator], Pxx)  # put the power values array in the dataframe
+                    Pxx = self.__calculateChannelPower(ad_info.ad, ad_info.adfrequency)  # Use welch() to calculate the power array from the list of LFPs in ad_info
+                    self.__setDataframeCell(filename, self.dfPowerChannelNames[one_thru_eight_iterator], fmean(Pxx))  # put the power values array in the dataframe
                     one_thru_eight_iterator += 1
                     channels_list.append(channel_number_iterator)  # add the channel number to a list for use later
                 channel_number_iterator += 1  # iterate to the next 0-indexed channel number
@@ -85,8 +88,11 @@ class AccessData:
             for channelCombo, column in zip(comboList, self.dfCoherenceChannelNames):
                 ad_info1 = pl2_ad(filename, channelCombo[0])
                 ad_info2 = pl2_ad(filename, channelCombo[1])
-                Cxy = self.__calculateChannelCoherence(ad_info1.ad, ad_info2.ad)
-                self.__setDataframeCell(filename, column, Cxy)
+                if ad_info1.adfrequency != ad_info2.adfrequency:
+                    print("Coherence frequencies do not match")
+                    exit(1)
+                Cxy = self.__calculateChannelCoherence(ad_info1.ad, ad_info2.ad, ad_info2.adfrequency)
+                self.__setDataframeCell(filename, column, fmean(Cxy))
 
             printProgressBar(i + 1, l, prefix='Progress:', suffix='Complete', length=50)  # update progress bar
             i += 1
@@ -101,18 +107,16 @@ class AccessData:
                 files.append(f)  # append it to our list of file names
         return files
 
-    def __calculateChannelPower(self, ad):
+    def __calculateChannelPower(self, ad, frequency):
         """Method for calculating the power values of a channel's LFP data. This function is trivial, but necessary
         for making the code more readable. """
-        print("Calculating power")
-        f, Pxx = signal.welch(ad)
+        f, Pxx = signal.welch(ad, fs=frequency)
         return Pxx
 
-    def __calculateChannelCoherence(self, ad1, ad2):
+    def __calculateChannelCoherence(self, ad1, ad2, frequency):
         """Method for calculating the coherence values of a channel's LFP data. This function is trivial,
         but necessary for making the code more readable. """
-        print("Calculating coherence")
-        f, Cxy = signal.coherence(ad1, ad2)
+        f, Cxy = signal.coherence(ad1, ad2, fs=frequency)
         return Cxy
 
     def __setDataframeCell(self, index, column, value):
@@ -128,5 +132,4 @@ class AccessData:
 
 if __name__ == "__main__":
     accessObj = AccessData()
-    accessObj.getDataForLasso()
     accessObj.printDataFrame()
