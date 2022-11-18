@@ -53,7 +53,7 @@ class AccessData:
                                         'Coherence 4 & 7', 'Coherence 4 & 8', 'Coherence 5 & 6', 'Coherence 5 & 7',
                                         'Coherence 5 & 8', 'Coherence 6 & 7', 'Coherence 6 & 8', 'Coherence 7 & 8']
         self.band_names = [' Delta', ' Theta', ' Alpha', ' Beta', ' Low Gamma', ' High Gamma']
-
+        self.header = []
         self.__preProcessData('test.csv')
 
     def __preProcessData(self, target_file):
@@ -93,7 +93,7 @@ class AccessData:
 
         header.append('A or D')
         writer.writerow(header)
-
+        self.header = header
         return header
 
     def __splitSignal(self, f, signal):
