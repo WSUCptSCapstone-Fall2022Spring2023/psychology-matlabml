@@ -5,6 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="37cacdca-1889-4f74-b8be-7000510817fb" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/../Sprint 1 Report and Video/Sprint 1 Video.mkv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Sprint 1 Report and Video/sprint_report_template.md" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/A-D Lasso Predictor.py" beforeDir="false" afterPath="$PROJECT_DIR$/A-D Lasso Predictor.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/External_Data_Access_and_Preprocessing_Module.py" beforeDir="false" afterPath="$PROJECT_DIR$/External_Data_Access_and_Preprocessing_Module.py" afterDir="false" />
@@ -137,6 +139,7 @@
         <item itemvalue="Python.External_Data_Access_and_Preprocessing_Module (1)" />
         <item itemvalue="Python.External_Data_Access_and_Preprocessing_Module" />
         <item itemvalue="Python.Print_pl2" />
+        <item itemvalue="Python.A-D Lasso Predictor" />
       </list>
     </recent_temporary>
   </component>
