@@ -9,15 +9,15 @@ from sklearn.metrics import mean_squared_error
 
 class LocalLogic:
 
-    def __init__(self, val, model):
-        self.val = val
-        self.model = Lasso(val)
+    def __init__(self, lambda_val, model):
+        self.lambda_val = lambda_val
+        self.model = model
 
-    def Fit(X, y):
+    def Fit(self, X, y):
         return self.model.fit(X, y)
 
-    def MeanSquaredError():
-        return 
+    def MeanSquaredError(y_pred, y_test):
+        return mean_squared_error(y_pred, y_test)
 
     def Predict(self, x_test):
         return self.model.predict(x_test) 
