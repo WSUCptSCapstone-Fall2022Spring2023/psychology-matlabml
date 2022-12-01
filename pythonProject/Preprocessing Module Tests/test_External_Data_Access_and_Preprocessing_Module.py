@@ -24,12 +24,20 @@ class TestAccessData(unittest.TestCase):
 
         self.assertEqual(expectedResult, actualResult)
 
-
-
     def testCreateHeader(self):
         self.fail("No test yet")
     def testGetFileNames(self):
         self.fail("No test yet")
+
+    def testvoltsToRawAD(self):
+        input = [-0.000007, 0.0000033, -0.0000058, -0.000015, 0.0000175]
+
+        expectedResult = [-36, 17, -30, -77, 90]
+
+        actualResult = self.AccessDataObject.voltsToRawAD(input)
+
+        self.assertEqual(expectedResult, actualResult)
+
 
 
 
