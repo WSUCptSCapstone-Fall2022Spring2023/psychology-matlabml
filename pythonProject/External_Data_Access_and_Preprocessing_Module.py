@@ -118,6 +118,19 @@ class AccessData:
             if 70 <= f[i] <= 90:
                 high_gamma.append(signal[i])
 
+        if len(delta) == 0:
+            delta.append(0)
+        if len(theta) == 0:
+            theta.append(0)
+        if len(alpha) == 0:
+            alpha.append(0)
+        if len(beta) == 0:
+            beta.append(0)
+        if len(low_gamma) == 0:
+            low_gamma.append(0)
+        if len(high_gamma) == 0:
+            high_gamma.append(0)
+
         l = []
         l.append(fmean(delta))
         l.append(fmean(theta))
@@ -127,6 +140,11 @@ class AccessData:
         l.append(fmean(high_gamma))
 
         return l
+
+    def __60HertzFilter(self, signal):
+        """Cleans the data for frequencies of 60Hz. This is because the machine used to collect data naturally produces
+        this signal, so it cannot be used."""
+
 
     def __pl2ToCSV(self, filename, writer):
         """Ths method accepts a pl2 file and converts its information into a row of data corresponding to the header of
@@ -142,9 +160,11 @@ class AccessData:
                 print("Processing power for channel {}".format(one_thru_eight_iterator))
                 ad_info = pl2_ad(filename, channel_number_iterator)  # use pl2_ad to get a/d info from a channel
 
+                # convert volts in ad_info.ad to raw A/D values
+                ad = self.voltsToRawAD(ad_info.ad)
+
                 # calculate power
-                f, Pxx = self.__calculateChannelPower(ad_info.ad,
-                                                      200)  # Use welch() to calculate the power array from the list of LFPs in ad_info
+                f, Pxx = self.__calculateChannelPower(ad, ad_info.adfrequency)  # Use welch() to calculate the power array from the list of LFPs in ad_info
 
                 # split power into 6 frequency bands
                 power_bands = self.__splitSignal(f, Pxx)
@@ -165,7 +185,13 @@ class AccessData:
             ad_info1 = pl2_ad(filename, channelCombo[0])
             ad_info2 = pl2_ad(filename, channelCombo[1])
 
-            f, Cxy = self.__calculateChannelCoherence(ad_info1.ad, ad_info2.ad, 200)
+            # convert volts in ad_info.ad to raw A/D values
+            ad1 = self.voltsToRawAD(ad_info1.ad)
+
+            # convert volts in ad_info.ad to raw A/D values
+            ad2 = self.voltsToRawAD(ad_info2.ad)
+
+            f, Cxy = self.__calculateChannelCoherence(ad1, ad2, ad_info.adfrequency)
             power_bands = self.__splitSignal(f, Cxy)
             # add new values to row to be written to the csv later
             for item in power_bands:
@@ -198,6 +224,11 @@ class AccessData:
         but useful for making the code more readable. """
         f, Cxy = signal.coherence(ad1, ad2, fs=frequency)
         return f, Cxy
+
+    def voltsToRawAD(self, arr):
+        arr = list(map(lambda x: x / (1.9488 * pow(10,-7)), arr))
+        arr = list(map(lambda x: round(x), arr))
+        return arr
 
 
 if __name__ == "__main__":
