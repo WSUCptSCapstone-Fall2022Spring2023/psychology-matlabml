@@ -22,6 +22,7 @@ from sklearn.linear_model import Lasso
 from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import train_test_split
 from External_Data_Access_and_Preprocessing_Module import AccessData, LoadData
+from matplotlib import pyplot as plt
 
 
 # start of the program
@@ -54,12 +55,21 @@ if __name__ == "__main__":
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, shuffle=True)
 
     print("Fitting Data")
-    lambda_val = [0.000001, 0.0001, 0.005, 0.01, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 1]  # set lambda. review documentation for explanation on what this does
+    lambda_val = [0.000001, 0.0001, 0.005, 0.01, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 1]  # set lambda
+    mse_arr = []
     for val in lambda_val:
         lasso = Lasso(val)  # create lasso model
         lasso.fit(x_train, y_train)  # fit lasso model to our training data
         y_pred = lasso.predict(x_test)  # make a prediction
         mse_lasso = mean_squared_error(y_pred, y_test)  # calculate the mean squared error of the prediction
-        print(("\nLasso MSE with Lambda={} is {}").format(val, mse_lasso))
+        mse_arr.append(mse_lasso)
+        print("\nLasso MSE with Lambda={} is {}".format(val, mse_lasso))
+
     print(lasso.coef_)
+
+    plt.plot(lambda_val, mse_arr)  # plot a graph of lambda values vs MSEs
+    plt.xlabel("Lambda Value")
+    plt.ylabel("Mean Squared Error")
+    plt.show()  # open window displaying graph
+
     print("\ndone")

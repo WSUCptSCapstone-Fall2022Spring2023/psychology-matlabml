@@ -102,7 +102,7 @@ class AccessData:
         theta = []
         alpha = []
         beta = []
-        low_gamme = []
+        low_gamma = []
         high_gamma = []
 
         for i in range(len(f)):
@@ -115,7 +115,7 @@ class AccessData:
             if 15 <= f[i] <= 30:
                 beta.append(f[i])
             if 45 <= f[i] <= 65:
-                low_gamme.append(f[i])
+                low_gamma.append(f[i])
             if 70 <= f[i] <= 90:
                 high_gamma.append(f[i])
 
@@ -124,7 +124,7 @@ class AccessData:
         l.append(fmean(theta))
         l.append(fmean(alpha))
         l.append(fmean(beta))
-        l.append(fmean(low_gamme))
+        l.append(fmean(low_gamma))
         l.append(fmean(high_gamma))
 
         return l
