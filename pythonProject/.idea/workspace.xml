@@ -8,6 +8,7 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/A-D Lasso Predictor.py" beforeDir="false" afterPath="$PROJECT_DIR$/A-D Lasso Predictor.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/External_Data_Access_and_Preprocessing_Module.py" beforeDir="false" afterPath="$PROJECT_DIR$/External_Data_Access_and_Preprocessing_Module.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Preprocessing Module Tests/test_External_Data_Access_and_Preprocessing_Module.py" beforeDir="false" afterPath="$PROJECT_DIR$/Preprocessing Module Tests/test_External_Data_Access_and_Preprocessing_Module.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -47,7 +48,7 @@
     "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyIntegratedToolsModulesConfigurable"
   }
 }]]></component>
-  <component name="RunManager" selected="Python.A-D Lasso Predictor">
+  <component name="RunManager" selected="Python tests.Python tests for test_External_Data_Access_and_Preprocessing_Module.TestAccessData.testSplitSignal">
     <configuration name="A-D Lasso Predictor" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="pythonProject" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -132,13 +133,27 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="Python tests for test_External_Data_Access_and_Preprocessing_Module.TestAccessData.testSplitSignal" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+      <module name="pythonProject" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Preprocessing Module Tests" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;test_External_Data_Access_and_Preprocessing_Module.TestAccessData.testSplitSignal&quot;" />
+      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
+      <method v="2" />
+    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python tests.Python tests for test_External_Data_Access_and_Preprocessing_Module.TestAccessData.testSplitSignal" />
         <item itemvalue="Python.A-D Lasso Predictor" />
         <item itemvalue="Python.External_Data_Access_and_Preprocessing_Module (1)" />
         <item itemvalue="Python.External_Data_Access_and_Preprocessing_Module" />
         <item itemvalue="Python.Print_pl2" />
-        <item itemvalue="Python.A-D Lasso Predictor" />
       </list>
     </recent_temporary>
   </component>

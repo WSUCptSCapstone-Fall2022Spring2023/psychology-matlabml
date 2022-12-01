@@ -54,9 +54,8 @@ class AccessData:
                                         'Coherence 5 & 8', 'Coherence 6 & 7', 'Coherence 6 & 8', 'Coherence 7 & 8']
         self.band_names = [' Delta', ' Theta', ' Alpha', ' Beta', ' Low Gamma', ' High Gamma']
         self.header = []
-        self.__preProcessData('test.csv')
 
-    def __preProcessData(self, target_file):
+    def preProcessData(self, target_file):
         """Main method of this class. When called, it will populate a csv file with all power
         and coherence values from the data files in the directory pointed at by this class. """
         print("Getting data for Lasso")
@@ -98,26 +97,26 @@ class AccessData:
 
     def __splitSignal(self, f, signal):
         """splits an array of signal (power or coherence) values into an array of 6 arrays based on the 6 signal labels"""
-        delta = []
-        theta = []
-        alpha = []
-        beta = []
-        low_gamma = []
-        high_gamma = []
+        delta = []       # range 1-4
+        theta = []       # range 5-10
+        alpha = []       # range 11-14
+        beta = []        # range 15-30
+        low_gamma = []   # range 45-65
+        high_gamma = []  # range 70-90
 
         for i in range(len(f)):
             if 1 <= f[i] <= 4:
-                delta.append(f[i])
+                delta.append(signal[i])
             if 5 <= f[i] <= 10:
-                theta.append(f[i])
+                theta.append(signal[i])
             if 11 <= f[i] <= 14:
-                alpha.append(f[i])
+                alpha.append(signal[i])
             if 15 <= f[i] <= 30:
-                beta.append(f[i])
+                beta.append(signal[i])
             if 45 <= f[i] <= 65:
-                low_gamma.append(f[i])
+                low_gamma.append(signal[i])
             if 70 <= f[i] <= 90:
-                high_gamma.append(f[i])
+                high_gamma.append(signal[i])
 
         l = []
         l.append(fmean(delta))

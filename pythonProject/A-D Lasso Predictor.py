@@ -29,6 +29,7 @@ from matplotlib import pyplot as plt
 if __name__ == "__main__":
 
     processingObject = AccessData(r'C:\Users\aidan.nunn\Documents\Homework\CS 421\Sample Data')
+    processingObject.preProcessData('test.csv')
 
     # lists holding the target value we want to predict and the feature values we will use in the prediction
     features = processingObject.header
