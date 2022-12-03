@@ -47,28 +47,7 @@
     &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyIntegratedToolsModulesConfigurable&quot;
   }
 }</component>
-  <component name="RunManager" selected="Python tests.Python tests for test_External_Data_Access_and_Preprocessing_Module.TestAccessData.testGetFileNames">
-    <configuration name="A-D Lasso Predictor" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="pythonProject" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/A-D Lasso Predictor.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
+  <component name="RunManager" selected="Python tests.Python tests for test_External_Data_Access_and_Preprocessing_Module.TestAccessData.testNoiseArtifactsFilter">
     <configuration name="External_Data_Access_and_Preprocessing_Module" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="pythonProject" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -118,7 +97,7 @@
       <option name="_new_targetType" value="&quot;PYTHON&quot;" />
       <method v="2" />
     </configuration>
-    <configuration name="Python tests for test_External_Data_Access_and_Preprocessing_Module.TestAccessData.testvoltsToRawAD" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+    <configuration name="Python tests for test_External_Data_Access_and_Preprocessing_Module.TestAccessData.testNoiseArtifactsFilter" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
       <module name="pythonProject" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -128,17 +107,31 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;test_External_Data_Access_and_Preprocessing_Module.TestAccessData.testvoltsToRawAD&quot;" />
+      <option name="_new_target" value="&quot;test_External_Data_Access_and_Preprocessing_Module.TestAccessData.testNoiseArtifactsFilter&quot;" />
+      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Python tests for test_External_Data_Access_and_Preprocessing_Module.TestAccessData.testVoltsToRawAD" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+      <module name="pythonProject" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Preprocessing Module Tests" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;test_External_Data_Access_and_Preprocessing_Module.TestAccessData.testVoltsToRawAD&quot;" />
       <option name="_new_targetType" value="&quot;PYTHON&quot;" />
       <method v="2" />
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python tests.Python tests for test_External_Data_Access_and_Preprocessing_Module.TestAccessData.testNoiseArtifactsFilter" />
+        <item itemvalue="Python tests.Python tests for test_External_Data_Access_and_Preprocessing_Module.TestAccessData.testVoltsToRawAD" />
         <item itemvalue="Python tests.Python tests for test_External_Data_Access_and_Preprocessing_Module.TestAccessData.testGetFileNames" />
         <item itemvalue="Python tests.Python tests for test_External_Data_Access_and_Preprocessing_Module.TestAccessData.testCreateHeader" />
         <item itemvalue="Python.External_Data_Access_and_Preprocessing_Module" />
-        <item itemvalue="Python.A-D Lasso Predictor" />
-        <item itemvalue="Python tests.Python tests for test_External_Data_Access_and_Preprocessing_Module.TestAccessData.testvoltsToRawAD" />
       </list>
     </recent_temporary>
   </component>

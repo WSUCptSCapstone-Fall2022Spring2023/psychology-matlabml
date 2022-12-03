@@ -15,6 +15,16 @@ from matplotlib import pyplot as plt
 from statistics import fmean
 import csv
 
+class Config:
+    """This class holds info for the configuration of our data cleaning"""
+
+    def __init__(self):
+        self.filterRange = [57, 63]
+        self.dwnSample = 5
+        self.artifactThreshold = 1.5
+        self.onset = 0.0125  # 25 values prior
+        self.offset = 0.5  # 1000 values after
+
 
 class LoadData:
     """Class used to load a CSV file of data into a pandas dataframe for use in the logic modules"""
@@ -232,15 +242,46 @@ class AccessData:
         """Cleans the data for frequencies of 60Hz using a second order Chebyshev type 1 notch filter. This is because the machine used to collect data naturally produces
         this signal, so it cannot be used. x is array to be cleaned, freq is sampling frequency."""
 
-        y = signal.cheby1(N=2, rp=5, Wn=x, fs=freq)
 
-    def __noiseArtifactsFilter(self, signal):
-        """Cleans the data for noise artifacts created by interference by sources like the rat bashing its head against the enclosure wall."""
+    def __noiseArtifactsFilter(self, sig, artifactThreshold, onset, offset):
+        """Cleans the data for noise artifacts created by interference by sources like the rat bashing its head against the enclosure wall.
+        Filter is performed by scanning the signal array for values greater than the threshold, then removing all values a fraction of a second before and after that value."""
+
+        rangesToRemove = []  # make list of ranges to remove after searching
+
+        # iterate through array
+        endOfArray = len(sig)-1
+        for i in range(len(sig)):
+            if sig[i] >= artifactThreshold:  # if a value is greater than the threshold
+                if i-onset < 0:  # check for out-of-bounds-ing
+                    rangesToRemove.append([0, i + offset])  # add range to be removed to array
+                elif i+offset > endOfArray:
+                    rangesToRemove.append([i-onset, endOfArray])  # add range to be removed to array
+                elif i-onset < 0 and i+offset > endOfArray:
+                    rangesToRemove.append([0, endOfArray])
+                else:
+                    rangesToRemove.append([i-onset, i+offset])  # add range to be removed to array
+
+        for r in rangesToRemove:
+            for i in range(r[0], r[1] + 1):
+                sig[i] = 'erase'
+
+        cleanSig = []
+        for val in sig:
+            if val != 'erase':
+                cleanSig.append(val)
 
 
-    def __downSampling(self, signal, dwnSamplingFactor):
+
+        return cleanSig
+
+
+
+    def __downSampling(self, sig, dwnSamplingFactor):
         """Downsamples the data for faster processing. dwnSamplingFactor needs to be a divisor of freq, which is the sampling frequency."""
-        return signal.decimate(signal, dwnSamplingFactor)
+
+
+
 
 
 if __name__ == "__main__":

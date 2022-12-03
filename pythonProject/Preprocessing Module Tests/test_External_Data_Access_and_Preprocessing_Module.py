@@ -15,6 +15,7 @@ class TestAccessData(unittest.TestCase):
 
     def testSplitSignal(self):
         """Unit test of the splitSignal() method. We use two sample arrays of signal values and frequency values"""
+
         signalArray =    [1,    2, 3,  4, 5,  6,  7,  8,  9,  10,  11, 12, 13,   14,  15]
         frequencyArray = [0.02, 2, 66, 9, 78, 12, 30, 40, 91, 4.5, 2,  43, 55.6, 120, 17]
 
@@ -25,6 +26,8 @@ class TestAccessData(unittest.TestCase):
         self.assertEqual(expectedResult, actualResult)
 
     def testCreateHeader(self):
+        """Unit test of the method which creates the header for the csv file power and coherence values are sent to."""
+
         expectedResult = ['Channel 1 Power Delta', 'Channel 1 Power Theta', 'Channel 1 Power Alpha', 'Channel 1 Power Beta',
                           'Channel 1 Power Low Gamma', 'Channel 1 Power High Gamma', 'Channel 2 Power Delta', 'Channel 2 Power Theta',
                           'Channel 2 Power Alpha', 'Channel 2 Power Beta', 'Channel 2 Power Low Gamma', 'Channel 2 Power High Gamma',
@@ -76,14 +79,20 @@ class TestAccessData(unittest.TestCase):
         actualResult = self.AccessDataObject.header
 
         self.assertEqual(expectedResult, actualResult)
+
     def testGetFileNames(self):
+        """Unit test of the method which gets the file names of all files in a directory. This method reads a directory
+        on your local PC, so the test will fail unless a directory matching the one in the setup method exists with a
+        file matching the name in this function (Please change if running on your PC)"""
 
         expectedResult = ['A170_post0_2020-4-20_pl2_spl_ead_plx.pl2']
         actualResult = self.AccessDataObject._AccessData__getFileNames()
 
         self.assertEqual(expectedResult, actualResult)
 
-    def testvoltsToRawAD(self):
+    def testVoltsToRawAD(self):
+        """Unit test of the voltsToRawAD() method."""
+
         input = [-0.000007, 0.0000033, -0.0000058, -0.000015, 0.0000175]
 
         expectedResult = [-36, 17, -30, -77, 90]
@@ -92,7 +101,16 @@ class TestAccessData(unittest.TestCase):
 
         self.assertEqual(expectedResult, actualResult)
 
+    def testNoiseArtifactsFilter(self):
+        """Unit test of the noiseArtifactsFilter() method. Inputs for filtering are a 1.5 threshold, 1 onset, and 2 offset."""
 
+        input = [2, -0.24, 0.8, 0.76, 0.01, 0.04, 0.07, 7, 0.09, 0.08, 0.04, 0.9, 1.5, 0.001, 81, 0.5, -1.7, 0.4, -1, -4, 0.05, -0.9, 8]
+
+        expectedResult = [0.76, 0.01, 0.04, 0.04, 0.4, -1, -4, 0.05]
+
+        actualResult = self.AccessDataObject._AccessData__noiseArtifactsFilter(input, 1.5, 1, 2)
+
+        self.assertEqual(expectedResult, actualResult)
 
 
 
