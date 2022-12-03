@@ -78,7 +78,6 @@ class AccessData:
         """This function creates the header for our csv output file. Since the header is 216 columns, it's much easier
         to create it programmatically"""
 
-        # header is large, so create programmatically
         # order is all powers + bandNames, then all coherences + band names
         header = []
 
@@ -141,7 +140,9 @@ class AccessData:
 
         return l
 
+
     def __pl2ToCSV(self, filename, writer):
+        # TODO needs refactoring into multiple functions. use voltsToRawAD in first loop only, not in second loop to save processing time. three loops: one for data access and cleaning, one for power, and one for coherence?
         """Ths method accepts a pl2 file and converts its information into a row of data corresponding to the header of
         the CSV file we're writing to. It prints the row to the file."""
         channels_list = []  # List to hold 0-indexed channel numbers instead of what is listed in the resource tuples
@@ -157,6 +158,8 @@ class AccessData:
 
                 # convert volts in ad_info.ad to raw A/D values
                 ad = self.voltsToRawAD(ad_info.ad)
+
+                # perform data cleaning here
 
                 # calculate power
                 f, Pxx = self.__calculateChannelPower(ad, ad_info.adfrequency)  # Use welch() to calculate the power array from the list of LFPs in ad_info
@@ -221,25 +224,26 @@ class AccessData:
         return f, Cxy
 
     def voltsToRawAD(self, arr):
-        arr = list(map(lambda x: x / (1.9488 * pow(10,-7)), arr))
+        arr = list(map(lambda x: x / (1.9488 * pow(10, -7)), arr))
         arr = list(map(lambda x: round(x), arr))
         return arr
 
-    def __60HertzFilter(self, signal):
-        """Cleans the data for frequencies of 60Hz. This is because the machine used to collect data naturally produces
-        this signal, so it cannot be used."""
+    def __60HertzFilter(self, x, freq):
+        """Cleans the data for frequencies of 60Hz using a second order Chebyshev type 1 notch filter. This is because the machine used to collect data naturally produces
+        this signal, so it cannot be used. x is array to be cleaned, freq is sampling frequency."""
 
-    def __noiseArtifactsFilter(self, signal, freq):
+        y = signal.cheby1(N=2, rp=5, Wn=x, fs=freq)
+
+    def __noiseArtifactsFilter(self, signal):
         """Cleans the data for noise artifacts created by interference by sources like the rat bashing its head against the enclosure wall."""
 
 
     def __downSampling(self, signal, dwnSamplingFactor):
         """Downsamples the data for faster processing. dwnSamplingFactor needs to be a divisor of freq, which is the sampling frequency."""
-        return scipy.signal.decimate(signal, dwnSamplingFactor)
+        return signal.decimate(signal, dwnSamplingFactor)
 
 
 if __name__ == "__main__":
     accessObj = AccessData(r'C:\Users\aidan.nunn\Documents\Homework\CS 421\SampleSampleData')
-    print(accessObj.header)
     dataframe = LoadData('test.csv')
     dataframe.printDataFrame()

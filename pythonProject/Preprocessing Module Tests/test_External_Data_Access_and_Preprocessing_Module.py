@@ -5,8 +5,8 @@ from External_Data_Access_and_Preprocessing_Module import AccessData, LoadData  
 class TestAccessData(unittest.TestCase):
     """This class contains unit tests for the Access Data class"""
     def setUp(self):
-        """This method is called before every test case"""
-        self.AccessDataObject = AccessData(r'C:\Users\aidan.nunn\Documents\Homework\CS 421\Sample Data')
+        """This method is called before every test case. Please create a directory for AccessData to open with one .pl2 file in it, otherwise testGetFileNames() will fail."""
+        self.AccessDataObject = AccessData(r'C:\Users\aidan.nunn\Documents\Homework\CS 421\SampleSampleData')
         self.file = open("test_file.csv", "w")
 
     def tearDown(self):
@@ -77,7 +77,11 @@ class TestAccessData(unittest.TestCase):
 
         self.assertEqual(expectedResult, actualResult)
     def testGetFileNames(self):
-        self.fail("No test yet")
+
+        expectedResult = ['A170_post0_2020-4-20_pl2_spl_ead_plx.pl2']
+        actualResult = self.AccessDataObject._AccessData__getFileNames()
+
+        self.assertEqual(expectedResult, actualResult)
 
     def testvoltsToRawAD(self):
         input = [-0.000007, 0.0000033, -0.0000058, -0.000015, 0.0000175]
