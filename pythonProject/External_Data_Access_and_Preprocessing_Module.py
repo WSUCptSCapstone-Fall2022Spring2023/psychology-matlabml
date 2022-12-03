@@ -6,6 +6,7 @@ import os
 
 import numpy as np
 import pandas as pd
+import scipy.signal
 from scipy import signal
 from itertools import combinations
 from pypl2 import pl2_ad, pl2_info
@@ -65,6 +66,7 @@ class AccessData:
         f = open(target_file, 'w', newline='')
         writer = csv.writer(f)
         self.__createHeaderForBinaryClassifierCSV(writer)
+        writer.writerow(self.header)
         # iterate through all files and populate the pandas dataframe with power values
         for filename in self.files:
             print("Processing file {}".format(filename))
@@ -72,7 +74,7 @@ class AccessData:
 
         f.close()
 
-    def __createHeaderForBinaryClassifierCSV(self, writer):
+    def __createHeaderForBinaryClassifierCSV(self):
         """This function creates the header for our csv output file. Since the header is 216 columns, it's much easier
         to create it programmatically"""
 
@@ -91,9 +93,7 @@ class AccessData:
                 header.append(self.coherence_channel_names[i] + self.band_names[j])
 
         header.append('A or D')
-        writer.writerow(header)
         self.header = header
-        return header
 
     def __splitSignal(self, f, signal):
         """splits an array of signal (power or coherence) values into an array of 6 arrays based on the 6 signal labels"""
@@ -140,11 +140,6 @@ class AccessData:
         l.append(fmean(high_gamma))
 
         return l
-
-    def __60HertzFilter(self, signal):
-        """Cleans the data for frequencies of 60Hz. This is because the machine used to collect data naturally produces
-        this signal, so it cannot be used."""
-
 
     def __pl2ToCSV(self, filename, writer):
         """Ths method accepts a pl2 file and converts its information into a row of data corresponding to the header of
@@ -230,8 +225,21 @@ class AccessData:
         arr = list(map(lambda x: round(x), arr))
         return arr
 
+    def __60HertzFilter(self, signal):
+        """Cleans the data for frequencies of 60Hz. This is because the machine used to collect data naturally produces
+        this signal, so it cannot be used."""
+
+    def __noiseArtifactsFilter(self, signal, freq):
+        """Cleans the data for noise artifacts created by interference by sources like the rat bashing its head against the enclosure wall."""
+
+
+    def __downSampling(self, signal, dwnSamplingFactor):
+        """Downsamples the data for faster processing. dwnSamplingFactor needs to be a divisor of freq, which is the sampling frequency."""
+        return scipy.signal.decimate(signal, dwnSamplingFactor)
+
 
 if __name__ == "__main__":
     accessObj = AccessData(r'C:\Users\aidan.nunn\Documents\Homework\CS 421\SampleSampleData')
+    print(accessObj.header)
     dataframe = LoadData('test.csv')
     dataframe.printDataFrame()

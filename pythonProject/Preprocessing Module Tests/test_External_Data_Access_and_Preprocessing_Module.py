@@ -25,7 +25,57 @@ class TestAccessData(unittest.TestCase):
         self.assertEqual(expectedResult, actualResult)
 
     def testCreateHeader(self):
-        self.fail("No test yet")
+        expectedResult = ['Channel 1 Power Delta', 'Channel 1 Power Theta', 'Channel 1 Power Alpha', 'Channel 1 Power Beta',
+                          'Channel 1 Power Low Gamma', 'Channel 1 Power High Gamma', 'Channel 2 Power Delta', 'Channel 2 Power Theta',
+                          'Channel 2 Power Alpha', 'Channel 2 Power Beta', 'Channel 2 Power Low Gamma', 'Channel 2 Power High Gamma',
+                          'Channel 3 Power Delta', 'Channel 3 Power Theta', 'Channel 3 Power Alpha', 'Channel 3 Power Beta',
+                          'Channel 3 Power Low Gamma', 'Channel 3 Power High Gamma', 'Channel 4 Power Delta', 'Channel 4 Power Theta',
+                          'Channel 4 Power Alpha', 'Channel 4 Power Beta', 'Channel 4 Power Low Gamma', 'Channel 4 Power High Gamma',
+                          'Channel 5 Power Delta', 'Channel 5 Power Theta', 'Channel 5 Power Alpha', 'Channel 5 Power Beta',
+                          'Channel 5 Power Low Gamma', 'Channel 5 Power High Gamma', 'Channel 6 Power Delta', 'Channel 6 Power Theta',
+                          'Channel 6 Power Alpha', 'Channel 6 Power Beta', 'Channel 6 Power Low Gamma', 'Channel 6 Power High Gamma',
+                          'Channel 7 Power Delta', 'Channel 7 Power Theta', 'Channel 7 Power Alpha', 'Channel 7 Power Beta', 'Channel 7 Power Low Gamma',
+                          'Channel 7 Power High Gamma', 'Channel 8 Power Delta', 'Channel 8 Power Theta', 'Channel 8 Power Alpha', 'Channel 8 Power Beta',
+                          'Channel 8 Power Low Gamma', 'Channel 8 Power High Gamma', 'Coherence 1 & 2 Delta', 'Coherence 1 & 2 Theta', 'Coherence 1 & 2 Alpha',
+                          'Coherence 1 & 2 Beta', 'Coherence 1 & 2 Low Gamma', 'Coherence 1 & 2 High Gamma', 'Coherence 1 & 3 Delta', 'Coherence 1 & 3 Theta',
+                          'Coherence 1 & 3 Alpha', 'Coherence 1 & 3 Beta', 'Coherence 1 & 3 Low Gamma', 'Coherence 1 & 3 High Gamma', 'Coherence 1 & 4 Delta',
+                          'Coherence 1 & 4 Theta', 'Coherence 1 & 4 Alpha', 'Coherence 1 & 4 Beta', 'Coherence 1 & 4 Low Gamma', 'Coherence 1 & 4 High Gamma',
+                          'Coherence 1 & 5 Delta', 'Coherence 1 & 5 Theta', 'Coherence 1 & 5 Alpha', 'Coherence 1 & 5 Beta', 'Coherence 1 & 5 Low Gamma',
+                          'Coherence 1 & 5 High Gamma', 'Coherence 1 & 6 Delta', 'Coherence 1 & 6 Theta', 'Coherence 1 & 6 Alpha', 'Coherence 1 & 6 Beta',
+                          'Coherence 1 & 6 Low Gamma', 'Coherence 1 & 6 High Gamma', 'Coherence 1 & 7 Delta', 'Coherence 1 & 7 Theta', 'Coherence 1 & 7 Alpha',
+                          'Coherence 1 & 7 Beta', 'Coherence 1 & 7 Low Gamma', 'Coherence 1 & 7 High Gamma', 'Coherence 1 & 8 Delta', 'Coherence 1 & 8 Theta',
+                          'Coherence 1 & 8 Alpha', 'Coherence 1 & 8 Beta', 'Coherence 1 & 8 Low Gamma', 'Coherence 1 & 8 High Gamma', 'Coherence 2 & 3 Delta',
+                          'Coherence 2 & 3 Theta', 'Coherence 2 & 3 Alpha', 'Coherence 2 & 3 Beta', 'Coherence 2 & 3 Low Gamma', 'Coherence 2 & 3 High Gamma',
+                          'Coherence 2 & 4 Delta', 'Coherence 2 & 4 Theta', 'Coherence 2 & 4 Alpha', 'Coherence 2 & 4 Beta', 'Coherence 2 & 4 Low Gamma',
+                          'Coherence 2 & 4 High Gamma', 'Coherence 2 & 5 Delta', 'Coherence 2 & 5 Theta', 'Coherence 2 & 5 Alpha', 'Coherence 2 & 5 Beta',
+                          'Coherence 2 & 5 Low Gamma', 'Coherence 2 & 5 High Gamma', 'Coherence 2 & 6 Delta', 'Coherence 2 & 6 Theta', 'Coherence 2 & 6 Alpha',
+                          'Coherence 2 & 6 Beta', 'Coherence 2 & 6 Low Gamma', 'Coherence 2 & 6 High Gamma', 'Coherence 2 & 7 Delta', 'Coherence 2 & 7 Theta',
+                          'Coherence 2 & 7 Alpha', 'Coherence 2 & 7 Beta', 'Coherence 2 & 7 Low Gamma', 'Coherence 2 & 7 High Gamma', 'Coherence 2 & 8 Delta',
+                          'Coherence 2 & 8 Theta', 'Coherence 2 & 8 Alpha', 'Coherence 2 & 8 Beta', 'Coherence 2 & 8 Low Gamma', 'Coherence 2 & 8 High Gamma',
+                          'Coherence 3 & 4 Delta', 'Coherence 3 & 4 Theta', 'Coherence 3 & 4 Alpha', 'Coherence 3 & 4 Beta', 'Coherence 3 & 4 Low Gamma',
+                          'Coherence 3 & 4 High Gamma', 'Coherence 3 & 5 Delta', 'Coherence 3 & 5 Theta', 'Coherence 3 & 5 Alpha', 'Coherence 3 & 5 Beta',
+                          'Coherence 3 & 5 Low Gamma', 'Coherence 3 & 5 High Gamma', 'Coherence 3 & 6 Delta', 'Coherence 3 & 6 Theta', 'Coherence 3 & 6 Alpha',
+                          'Coherence 3 & 6 Beta', 'Coherence 3 & 6 Low Gamma', 'Coherence 3 & 6 High Gamma', 'Coherence 3 & 7 Delta', 'Coherence 3 & 7 Theta',
+                          'Coherence 3 & 7 Alpha', 'Coherence 3 & 7 Beta', 'Coherence 3 & 7 Low Gamma', 'Coherence 3 & 7 High Gamma', 'Coherence 3 & 8 Delta',
+                          'Coherence 3 & 8 Theta', 'Coherence 3 & 8 Alpha', 'Coherence 3 & 8 Beta', 'Coherence 3 & 8 Low Gamma', 'Coherence 3 & 8 High Gamma',
+                          'Coherence 4 & 5 Delta', 'Coherence 4 & 5 Theta', 'Coherence 4 & 5 Alpha', 'Coherence 4 & 5 Beta', 'Coherence 4 & 5 Low Gamma',
+                          'Coherence 4 & 5 High Gamma', 'Coherence 4 & 6 Delta', 'Coherence 4 & 6 Theta', 'Coherence 4 & 6 Alpha', 'Coherence 4 & 6 Beta',
+                          'Coherence 4 & 6 Low Gamma', 'Coherence 4 & 6 High Gamma', 'Coherence 4 & 7 Delta', 'Coherence 4 & 7 Theta', 'Coherence 4 & 7 Alpha',
+                          'Coherence 4 & 7 Beta', 'Coherence 4 & 7 Low Gamma', 'Coherence 4 & 7 High Gamma', 'Coherence 4 & 8 Delta', 'Coherence 4 & 8 Theta',
+                          'Coherence 4 & 8 Alpha', 'Coherence 4 & 8 Beta', 'Coherence 4 & 8 Low Gamma', 'Coherence 4 & 8 High Gamma', 'Coherence 5 & 6 Delta',
+                          'Coherence 5 & 6 Theta', 'Coherence 5 & 6 Alpha', 'Coherence 5 & 6 Beta', 'Coherence 5 & 6 Low Gamma', 'Coherence 5 & 6 High Gamma',
+                          'Coherence 5 & 7 Delta', 'Coherence 5 & 7 Theta', 'Coherence 5 & 7 Alpha', 'Coherence 5 & 7 Beta', 'Coherence 5 & 7 Low Gamma',
+                          'Coherence 5 & 7 High Gamma', 'Coherence 5 & 8 Delta', 'Coherence 5 & 8 Theta', 'Coherence 5 & 8 Alpha', 'Coherence 5 & 8 Beta',
+                          'Coherence 5 & 8 Low Gamma', 'Coherence 5 & 8 High Gamma', 'Coherence 6 & 7 Delta', 'Coherence 6 & 7 Theta', 'Coherence 6 & 7 Alpha',
+                          'Coherence 6 & 7 Beta', 'Coherence 6 & 7 Low Gamma', 'Coherence 6 & 7 High Gamma', 'Coherence 6 & 8 Delta', 'Coherence 6 & 8 Theta',
+                          'Coherence 6 & 8 Alpha', 'Coherence 6 & 8 Beta', 'Coherence 6 & 8 Low Gamma', 'Coherence 6 & 8 High Gamma', 'Coherence 7 & 8 Delta',
+                          'Coherence 7 & 8 Theta', 'Coherence 7 & 8 Alpha', 'Coherence 7 & 8 Beta', 'Coherence 7 & 8 Low Gamma', 'Coherence 7 & 8 High Gamma', 'A or D']
+
+
+        self.AccessDataObject._AccessData__createHeaderForBinaryClassifierCSV()
+        actualResult = self.AccessDataObject.header
+
+        self.assertEqual(expectedResult, actualResult)
     def testGetFileNames(self):
         self.fail("No test yet")
 

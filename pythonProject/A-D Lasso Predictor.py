@@ -65,8 +65,10 @@ if __name__ == "__main__":
         mse_lasso = mean_squared_error(y_pred, y_test)  # calculate the mean squared error of the prediction
         mse_arr.append(mse_lasso)
         print("\nLasso MSE with Lambda={} is {}".format(val, mse_lasso))
+        print("\nLasso coefficients table: ")
+        print(lasso.coef_)
 
-    print(lasso.coef_)
+
 
     plt.plot(lambda_val, mse_arr)  # plot a graph of lambda values vs MSEs
     plt.xlabel("Lambda Value")
