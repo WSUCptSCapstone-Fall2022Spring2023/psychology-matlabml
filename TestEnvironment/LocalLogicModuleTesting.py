@@ -1,13 +1,15 @@
 import sys
 import os
-
 from sklearn.model_selection import train_test_split
 
+# Allow access pythonProject files
 sys.path.append(os.path.abspath(os.path.join('..', 'pythonProject')))
 
+# Importing pythonProject files
 from pythonProject.LocalLogicModule import *
 from pythonProject.External_Data_Access_and_Preprocessing_Module import *
 
+# Initializing test class
 class LocalLogicModuleTest:
 
     def TestLambdaValues(self, x_train, y_train, x_test, y_test):
@@ -20,18 +22,19 @@ class LocalLogicModuleTest:
             print(("\nLasso MSE with Lambda={} is {}").format(val, mse_lasso))
 
     
-
+# MAIN
 if __name__ == "__main__":
+    #Preprocess the data
     accessObj = AccessData(r'C:\Users\charl\Desktop\SampleSampleData')
     dataframe = LoadData('test.csv')
-
+    # Initialize the target and feature values
     target = ['A or D']
     features = accessObj.header
-
+    # Create data frame for features and targets
     y = dataframe.df[target]
     x = dataframe.df[features]
-
+    # Split the data into testing and training data
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, shuffle=True)
-
+    # Test lambda functions to find the most accurate model
     test_logic_module = LocalLogicModuleTest()
     test_logic_module.TestLambdaValues(x_train, y_train, x_test, y_test)
