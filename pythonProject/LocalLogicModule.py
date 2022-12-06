@@ -7,20 +7,22 @@ from sklearn.linear_model import Lasso
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import mean_squared_error
 
-class LocalLogic:
+
+class LocalLogicModule:
 
     def __init__(self, lambda_val, model):
         self.lambda_val = lambda_val
         self.model = model
 
-    def Fit(self, X, y):
-        return self.model.fit(X, y)
+    def Fit(self, x_train, y_train):
+        self.model.fit(x_train, y_train)
 
-    def MeanSquaredError(y_pred, y_test):
+    def MSE(self, y_pred, y_test):
         return mean_squared_error(y_pred, y_test)
 
     def Predict(self, x_test):
-        return self.model.predict(x_test) 
+        return self.model.predict(x_test)
 
-    def TestAccuracy(y_true, y_pred):
+    def TestAccuracy(self, y_true, y_pred):
         return accuracy_score(y_true, y_pred)
+
