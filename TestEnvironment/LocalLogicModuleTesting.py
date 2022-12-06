@@ -35,4 +35,3 @@ if __name__ == "__main__":
 
     test_logic_module = LocalLogicModuleTest()
     test_logic_module.TestLambdaValues(x_train, y_train, x_test, y_test)
-    print("hello")
