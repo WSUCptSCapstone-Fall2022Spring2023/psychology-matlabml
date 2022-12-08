@@ -75,7 +75,7 @@ class AccessData:
         # open target csv file for write
         f = open(target_file, 'w', newline='')
         writer = csv.writer(f)
-        self.__createHeaderForBinaryClassifierCSV(writer)
+        self.__createHeaderForBinaryClassifierCSV()
         writer.writerow(self.header)
         # iterate through all files and populate the pandas dataframe with power values
         for filename in self.files:
@@ -167,12 +167,12 @@ class AccessData:
                 ad_info = pl2_ad(filename, channel_number_iterator)  # use pl2_ad to get a/d info from a channel
 
                 # convert volts in ad_info.ad to raw A/D values
-                ad = self.voltsToRawAD(ad_info.ad)
+                #ad = self.voltsToRawAD(ad_info.ad)
 
                 # perform data cleaning here
 
                 # calculate power
-                f, Pxx = self.__calculateChannelPower(ad, ad_info.adfrequency)  # Use welch() to calculate the power array from the list of LFPs in ad_info
+                f, Pxx = self.__calculateChannelPower(ad_info.ad, 200)#ad_info.adfrequency)  # Use welch() to calculate the power array from the list of LFPs in ad_info
 
                 # split power into 6 frequency bands
                 power_bands = self.__splitSignal(f, Pxx)
@@ -194,12 +194,12 @@ class AccessData:
             ad_info2 = pl2_ad(filename, channelCombo[1])
 
             # convert volts in ad_info.ad to raw A/D values
-            ad1 = self.voltsToRawAD(ad_info1.ad)
+            #ad1 = self.voltsToRawAD(ad_info1.ad)
 
             # convert volts in ad_info.ad to raw A/D values
-            ad2 = self.voltsToRawAD(ad_info2.ad)
+            #ad2 = self.voltsToRawAD(ad_info2.ad)
 
-            f, Cxy = self.__calculateChannelCoherence(ad1, ad2, ad_info.adfrequency)
+            f, Cxy = self.__calculateChannelCoherence(ad_info1.ad, ad_info2.ad, 200)#ad_info.adfrequency)
             power_bands = self.__splitSignal(f, Cxy)
             # add new values to row to be written to the csv later
             for item in power_bands:
