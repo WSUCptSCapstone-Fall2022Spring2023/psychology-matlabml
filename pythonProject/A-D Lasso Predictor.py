@@ -21,7 +21,7 @@
 from sklearn.linear_model import Lasso
 from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import train_test_split
-from External_Data_Access_and_Preprocessing_Module import AccessData, LoadData
+from Preprocessing_Module_Binary_Classifier import AccessData, LoadData
 from matplotlib import pyplot as plt
 import numpy as np
 

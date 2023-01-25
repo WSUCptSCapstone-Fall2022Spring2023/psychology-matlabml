@@ -1,5 +1,5 @@
 import unittest  # import unittest module
-from External_Data_Access_and_Preprocessing_Module import AccessData, LoadData  # import classes from file to be tested
+from Preprocessing_Module_Binary_Classifier import AccessData, LoadData  # import classes from file to be tested
 
 
 class TestAccessData(unittest.TestCase):
