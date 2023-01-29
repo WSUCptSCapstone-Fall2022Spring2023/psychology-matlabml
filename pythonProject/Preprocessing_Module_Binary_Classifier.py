@@ -234,6 +234,7 @@ class AccessData:
         return f, Cxy
 
     def voltsToRawAD(self, arr):
+        """Convert an array of volt values to raw A/D values"""
         arr = list(map(lambda x: x / (1.9488 * pow(10, -7)), arr))
         arr = list(map(lambda x: round(x), arr))
         return arr
@@ -247,44 +248,49 @@ class AccessData:
         """Cleans the data for noise artifacts created by interference by sources like the rat bashing its head against the enclosure wall.
         Filter is performed by scanning the signal array for values greater than the threshold, then removing all values a fraction of a second before and after that value."""
 
-        rangesToRemove = []  # make list of ranges to remove after searching
+        ranges_to_remove = []  # make list of ranges to remove after searching
 
         # iterate through array
-        endOfArray = len(sig)-1
+        end_of_array = len(sig)-1
         for i in range(len(sig)):
             if sig[i] >= artifactThreshold:  # if a value is greater than the threshold
                 if i-onset < 0:  # check for out-of-bounds-ing
-                    rangesToRemove.append([0, i + offset])  # add range to be removed to array
-                elif i+offset > endOfArray:
-                    rangesToRemove.append([i-onset, endOfArray])  # add range to be removed to array
-                elif i-onset < 0 and i+offset > endOfArray:
-                    rangesToRemove.append([0, endOfArray])
+                    ranges_to_remove.append([0, i + offset])  # add range to be removed to array
+                elif i+offset > end_of_array:
+                    ranges_to_remove.append([i-onset, end_of_array])  # add range to be removed to array
+                elif i-onset < 0 and i+offset > end_of_array:
+                    ranges_to_remove.append([0, end_of_array])
                 else:
-                    rangesToRemove.append([i-onset, i+offset])  # add range to be removed to array
+                    ranges_to_remove.append([i-onset, i+offset])  # add range to be removed to array
 
-        for r in rangesToRemove:
+        for r in ranges_to_remove:
             for i in range(r[0], r[1] + 1):
                 sig[i] = 'erase'
 
-        cleanSig = []
+        clean_sig = []
         for val in sig:
             if val != 'erase':
-                cleanSig.append(val)
+                clean_sig.append(val)
+
+        return clean_sig
 
 
 
-        return cleanSig
+    def __downSampling(self, sig, dsf, adfreq):
+        """Downsamples the data for faster processing. sig is the signal to be downsampled. dsf needs to be a divisor of adfreq, which is the sampling frequency."""
 
+        if adfreq % dsf != 0:
+            raise Exception("Downsampling Frequency is not a divisor of Sampling Frequency")
 
+        sig = scipy.signal.decimate(sig, dsf)
 
-    def __downSampling(self, sig, dwnSamplingFactor):
-        """Downsamples the data for faster processing. dwnSamplingFactor needs to be a divisor of freq, which is the sampling frequency."""
+        return sig
 
 
 
 
 
 if __name__ == "__main__":
-    accessObj = AccessData(r'C:\Users\aidan.nunn\Documents\Homework\CS 421\SampleSampleData')
+    accessObj = AccessData(r'C:\Users\aidan.nunn\Documents\Homework\CS 421')
     dataframe = LoadData('test.csv')
     dataframe.printDataFrame()

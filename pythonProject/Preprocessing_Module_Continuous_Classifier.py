@@ -205,10 +205,7 @@ class AccessData:
             for item in power_bands:
                 row.append(item)
 
-        if filename.startswith('A'):  # the filename starts with 'A' if it's in the A group
-            row.append('1')  # set the 'A or D' column value to 1 to represent it being an A column
-        if filename.startswith('D'):  # the filename starts with 'D' if it's in the D group
-            row.append('0')  # set the 'A or D' column value to 0 to represent it being a D column
+
         writer.writerow(row)
 
     def __getFileNames(self):

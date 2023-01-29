@@ -1,4 +1,7 @@
 import unittest  # import unittest module
+
+import numpy
+
 from Preprocessing_Module_Binary_Classifier import AccessData, LoadData  # import classes from file to be tested
 
 
@@ -6,7 +9,7 @@ class TestAccessData(unittest.TestCase):
     """This class contains unit tests for the Access Data class"""
     def setUp(self):
         """This method is called before every test case. Please create a directory for AccessData to open with one .pl2 file in it, otherwise testGetFileNames() will fail."""
-        self.AccessDataObject = AccessData(r'C:\Users\aidan.nunn\Documents\Homework\CS 421\SampleSampleData')
+        self.AccessDataObject = AccessData(r'C:\Users\aidan.nunn\Documents\Homework\CS 421')
         self.file = open("test_file.csv", "w")
 
     def tearDown(self):
@@ -111,6 +114,16 @@ class TestAccessData(unittest.TestCase):
         actualResult = self.AccessDataObject._AccessData__noiseArtifactsFilter(input, 1.5, 1, 2)
 
         self.assertEqual(expectedResult, actualResult)
+
+    def testDownSampling(self):
+
+        input = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30]
+
+        expectedResult = [0.9523711684276455, 5.966882643370076, 10.815006002654167, 15.909782205158153, 20.67519282567084, 25.839229480847393]
+
+        actualResult = self.AccessDataObject._AccessData__downSampling(input, 5, 2000)
+
+        self.assertTrue(numpy.array_equiv(expectedResult, actualResult))
 
 
 
