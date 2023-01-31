@@ -272,10 +272,15 @@ class AccessData:
 
         return cleanSig
 
+    def __downSampling(self, sig, dsf, adfreq):
+        """Downsamples the data for faster processing. sig is the signal to be downsampled. dsf needs to be a divisor of adfreq, which is the sampling frequency."""
 
+        if adfreq % dsf != 0:
+            raise Exception("Downsampling Frequency is not a divisor of Sampling Frequency")
 
-    def __downSampling(self, sig, dwnSamplingFactor):
-        """Downsamples the data for faster processing. dwnSamplingFactor needs to be a divisor of freq, which is the sampling frequency."""
+        sig = scipy.signal.decimate(sig, dsf)
+
+        return sig
 
 
 
