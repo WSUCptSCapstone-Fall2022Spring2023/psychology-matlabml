@@ -169,10 +169,20 @@ class AccessData:
                 # convert volts in ad_info.ad to raw A/D values
                 #ad = self.voltsToRawAD(ad_info.ad)
 
+
                 # perform data cleaning here
 
+                # 1. 60 Hertz Filter
+                ad = self.__60HertzFilter(ad_info.ad, ad_info.adfrequency)
+
+                # 2. Downsampling
+                ad = self.__downSampling(ad, 5, ad_info.adfrequency)
+
+                # 3. Threshold filter
+                ad = self.__noiseArtifactsFilter(ad, 0.0125, 40, ad_info.adfrequency)
+
                 # calculate power
-                f, Pxx = self.__calculateChannelPower(ad_info.ad, 200)#ad_info.adfrequency)  # Use welch() to calculate the power array from the list of LFPs in ad_info
+                f, Pxx = self.__calculateChannelPower(ad, ad_info.adfrequency)  # Use welch() to calculate the power array from the list of LFPs in ad_info
 
                 # split power into 6 frequency bands
                 power_bands = self.__splitSignal(f, Pxx)
@@ -199,7 +209,23 @@ class AccessData:
             # convert volts in ad_info.ad to raw A/D values
             #ad2 = self.voltsToRawAD(ad_info2.ad)
 
-            f, Cxy = self.__calculateChannelCoherence(ad_info1.ad, ad_info2.ad, 200)#ad_info.adfrequency)
+
+            # perform data cleaning here
+
+            # 1. 60 Hertz Filter
+            ad1 = self.__60HertzFilter(ad_info1.ad, ad_info1.adfrequency)
+            ad2 = self.__60HertzFilter(ad_info2.ad, ad_info2.adfrequency)
+
+            # 2. Downsampling
+            ad1 = self.__downSampling(ad1, 5, ad_info1.adfrequency)
+            ad2 = self.__downSampling(ad2, 5, ad_info2.adfrequency)
+
+            # 3. Threshold filter
+            ad1 = self.__noiseArtifactsFilter(ad1, 0.0125, 40, ad_info1.adfrequency)
+            ad2 = self.__noiseArtifactsFilter(ad2, 0.0125, 40, ad_info2.adfrequency)
+
+
+            f, Cxy = self.__calculateChannelCoherence(ad1, ad2, ad_info.adfrequency)
             power_bands = self.__splitSignal(f, Cxy)
             # add new values to row to be written to the csv later
             for item in power_bands:

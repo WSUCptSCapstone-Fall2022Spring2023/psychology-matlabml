@@ -1,6 +1,7 @@
 import unittest  # import unittest module
 
 import numpy
+import numpy as np
 
 from Preprocessing_Module_Binary_Classifier import AccessData, LoadData  # import classes from file to be tested
 
@@ -116,6 +117,7 @@ class TestAccessData(unittest.TestCase):
         self.assertEqual(expectedResult, actualResult)
 
     def testDownSampling(self):
+        """Unit test of downSampling() method. Down sampling by a rate of 5"""
 
         input = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30]
 
@@ -124,8 +126,6 @@ class TestAccessData(unittest.TestCase):
         actualResult = self.AccessDataObject._AccessData__downSampling(input, 5, 2000)
 
         self.assertTrue(numpy.array_equiv(expectedResult, actualResult))
-
-
 
 class TestLoadData(unittest.TestCase):
     """This class contains unit tests for the Load Data class"""
