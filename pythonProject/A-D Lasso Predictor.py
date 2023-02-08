@@ -34,7 +34,7 @@ def score(y_pred, y_true):
 # start of the program
 if __name__ == "__main__":
 
-    processingObject = AccessData(r'C:\Users\aidan.nunn\Documents\Homework\CS 421\Sample Data')
+    processingObject = AccessData(r'C:\Users\charl\Desktop\SampleSampleData')
     processingObject.preProcessData('test.csv')
 
     # lists holding the target value we want to predict and the feature values we will use in the prediction
@@ -50,7 +50,7 @@ if __name__ == "__main__":
                 'Coherence 4 & 7', 'Coherence 4 & 8', 'Coherence 5 & 6', 'Coherence 5 & 7',
                 'Coherence 5 & 8', 'Coherence 6 & 7', 'Coherence 6 & 8', 'Coherence 7 & 8']"""
 
-    dataObject = LoadData(r'C:\Users\aidan.nunn\Documents\Homework\CS 421\Sample Data\test.csv')
+    dataObject = LoadData(r'C:\Users\charl\Desktop\SampleSampleData1\test.csv')
 
     # set y as the target column and x as the features columns
     y = dataObject.df[target]

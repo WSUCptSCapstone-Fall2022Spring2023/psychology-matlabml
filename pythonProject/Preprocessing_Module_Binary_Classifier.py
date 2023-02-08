@@ -322,6 +322,7 @@ class AccessData:
 
 
 if __name__ == "__main__":
-    accessObj = AccessData(r'C:\Users\aidan.nunn\Documents\Homework\CS 421')
+
+    accessObj = AccessData(r'C:\Users\charl\Desktop\SampleSampleData')
     dataframe = LoadData('test.csv')
     dataframe.printDataFrame()

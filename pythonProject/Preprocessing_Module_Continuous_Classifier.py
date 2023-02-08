@@ -55,16 +55,26 @@ class AccessData:
 
         # Lists of channel names to be used in the below loops
         self.power_channel_names = ['Channel 1 Power', 'Channel 2 Power', 'Channel 3 Power', 'Channel 4 Power',
-                                    'Channel 5 Power', 'Channel 6 Power', 'Channel 7 Power', 'Channel 8 Power']
+                                    'Channel 5 Power', 'Channel 6 Power']
         self.coherence_channel_names = ['Coherence 1 & 2', 'Coherence 1 & 3', 'Coherence 1 & 4', 'Coherence 1 & 5',
-                                        'Coherence 1 & 6', 'Coherence 1 & 7', 'Coherence 1 & 8', 'Coherence 2 & 3',
-                                        'Coherence 2 & 4', 'Coherence 2 & 5', 'Coherence 2 & 6', 'Coherence 2 & 7',
-                                        'Coherence 2 & 8', 'Coherence 3 & 4', 'Coherence 3 & 5', 'Coherence 3 & 6',
-                                        'Coherence 3 & 7', 'Coherence 3 & 8', 'Coherence 4 & 5', 'Coherence 4 & 6',
-                                        'Coherence 4 & 7', 'Coherence 4 & 8', 'Coherence 5 & 6', 'Coherence 5 & 7',
-                                        'Coherence 5 & 8', 'Coherence 6 & 7', 'Coherence 6 & 8', 'Coherence 7 & 8']
+                                        'Coherence 1 & 6', 'Coherence 2 & 3', 'Coherence 2 & 4', 'Coherence 2 & 5',
+                                        'Coherence 2 & 6', 'Coherence 3 & 4', 'Coherence 3 & 5', 'Coherence 3 & 6',
+                                        'Coherence 4 & 5', 'Coherence 4 & 6', 'Coherence 5 & 6']
         self.band_names = [' Delta', ' Theta', ' Alpha', ' Beta', ' Low Gamma', ' High Gamma']
         self.header = []
+        self.preProcessData('test.csv')
+
+    def getTargetData(self, file):
+        """Method that returns a dataframe of the target values from a csv"""
+        da = []
+        with open(file, newline='') as csvfile:
+            data = csv.DictReader(csvfile)
+            for row in data:
+                da.append(row['g/kg'])
+
+        drinking_amounts = np.array(da)
+        target = pd.DataFrame({'Target': drinking_amounts}, columns=['Target'])
+        return target
 
     def preProcessData(self, target_file):
         """Main method of this class. When called, it will populate a csv file with all power
@@ -92,12 +102,12 @@ class AccessData:
         header = []
 
         # power channels + bands
-        for i in range(0, 8):
+        for i in range(0, 6):
             for j in range(0, 6):
                 header.append(self.power_channel_names[i] + self.band_names[j])
 
         # coherence channels + bands
-        for i in range(0, 28):
+        for i in range(0, 15):
             for j in range(0, 6):
                 header.append(self.coherence_channel_names[i] + self.band_names[j])
 
@@ -287,6 +297,14 @@ class AccessData:
 
 
 if __name__ == "__main__":
-    accessObj = AccessData(r'C:\Users\aidan.nunn\Documents\Homework\CS 421\SampleSampleData')
+    accessObj = AccessData(r'C:\Users\charl\Desktop\SampleSampleData1')
     dataframe = LoadData('test.csv')
     dataframe.printDataFrame()
+
+    # features = accessObj.header
+    # target = accessObj.getTargetData(r'C:\Users\charl\Desktop\DrinkingData - CompSci.csv')
+    # print(features)
+    # print(target)
+
+    # dataObject = LoadData(r'C:\Users\charl\Desktop\SampleSampleData1\test.csv')
+
