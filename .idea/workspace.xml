@@ -6,6 +6,9 @@
   <component name="ChangeListManager">
     <list default="true" id="bac3499c-5a39-48ba-9894-bb312b757a02" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pythonProject/A-D Lasso Predictor.py" beforeDir="false" afterPath="$PROJECT_DIR$/pythonProject/A-D Lasso Predictor.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pythonProject/Preprocessing Module Tests/test_External_Data_Access_and_Preprocessing_Module.py" beforeDir="false" afterPath="$PROJECT_DIR$/pythonProject/Preprocessing Module Tests/test_External_Data_Access_and_Preprocessing_Module.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pythonProject/Preprocessing_Module_Binary_Classifier.py" beforeDir="false" afterPath="$PROJECT_DIR$/pythonProject/Preprocessing_Module_Binary_Classifier.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pythonProject/Preprocessing_Module_Continuous_Classifier.py" beforeDir="false" afterPath="$PROJECT_DIR$/pythonProject/Preprocessing_Module_Continuous_Classifier.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
