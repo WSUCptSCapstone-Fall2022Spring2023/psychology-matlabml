@@ -3,14 +3,15 @@ import unittest  # import unittest module
 import numpy
 import numpy as np
 
-from Preprocessing_Module_Binary_Classifier import AccessData, LoadData  # import classes from file to be tested
+from Preprocessing_Module_Binary_Classifier import AccessData, LoadData, Config  # import classes from file to be tested
 
 
 class TestAccessData(unittest.TestCase):
     """This class contains unit tests for the Access Data class"""
     def setUp(self):
         """This method is called before every test case. Please create a directory for AccessData to open with one .pl2 file in it, otherwise testGetFileNames() will fail."""
-        self.AccessDataObject = AccessData(r'C:\Users\charl\Desktop')
+        cfg = Config()
+        self.AccessDataObject = AccessData('', cfg)
         self.file = open("test_file.csv", "w")
 
     def tearDown(self):
@@ -106,13 +107,13 @@ class TestAccessData(unittest.TestCase):
         self.assertEqual(expectedResult, actualResult)
 
     def testNoiseArtifactsFilter(self):
-        """Unit test of the noiseArtifactsFilter() method. Inputs for filtering are a 1.5 threshold, 1 onset, and 2 offset."""
+        """Unit test of the noiseArtifactsFilter() method. Inputs for filtering are a 1.5 threshold, 1 onset, 2 offset, and a frequency of 1."""
 
         input = [2, -0.24, 0.8, 0.76, 0.01, 0.04, 0.07, 7, 0.09, 0.08, 0.04, 0.9, 1.5, 0.001, 81, 0.5, -1.7, 0.4, -1, -4, 0.05, -0.9, 8]
 
         expectedResult = [0.76, 0.01, 0.04, 0.04, 0.4, -1, -4, 0.05]
 
-        actualResult = self.AccessDataObject._AccessData__noiseArtifactsFilter(input, 1.5, 1, 2)
+        actualResult = self.AccessDataObject._AccessData__noiseArtifactsFilter(input, 1.5, 1, 2, 1)
 
         self.assertEqual(expectedResult, actualResult)
 

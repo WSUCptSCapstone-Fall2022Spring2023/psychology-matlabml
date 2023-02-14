@@ -9,10 +9,8 @@ import scipy.signal
 from scipy import signal
 from itertools import combinations
 from pypl2 import pl2_ad, pl2_info
-from loadingBar import printProgressBar
-from matplotlib import pyplot as plt
 from statistics import fmean
-import csv
+import openpyxl
 
 class Config:
     """This class holds info for the configuration of our data cleaning"""
@@ -24,8 +22,7 @@ class Config:
         self.onset = 0.0125  # 25 values prior
         self.offset = 0.5  # 1000 values after
         self.sex = 'M'  # set to 'F' to process data for female models
-        with open(r'C:\Users\aidan.nunn\Documents\Homework\CS 421\Binary_Predictor_Data\Sex Differences_Alcohol SA Cohort #3', newline='') as csvfile:
-            self.excel_sheet = csv.DictReader(csvfile)
+        self.excel_sheet = r'D:\CS 421\Binary_Predictor_Data\Sex_Differences_Alcohol_SA_Cohort_#3.xlsx'
 
 class LoadData:
     """Class used to load a CSV file of data into a pandas dataframe for use in the logic modules"""
@@ -51,8 +48,10 @@ class AccessData:
 
     def __init__(self, sDir, cfg):
         self.sDir = sDir
+        self.cfg = cfg
         self.fType = '.pl2'  # File type we are looking for
-        self.pl2_files = self.__getFileNames()
+        self.dFrameDict = {}
+        self.dataframe = pandas.DataFrame()
 
         # Lists of channel names to be used in the below loops
         self.power_channel_names = ['Channel 1 Power', 'Channel 2 Power', 'Channel 3 Power', 'Channel 4 Power',
@@ -62,9 +61,11 @@ class AccessData:
                                         'Coherence 2 & 6', 'Coherence 3 & 4', 'Coherence 3 & 5', 'Coherence 3 & 6',
                                         'Coherence 4 & 5', 'Coherence 4 & 6', 'Coherence 5 & 6']
         self.band_names = [' Delta', ' Theta', ' Alpha', ' Beta', ' Low Gamma', ' High Gamma']
-        self.cfg = cfg
-        self.dataframe = pandas.DataFrame()
-        self.preProcessData('processed_data.csv')
+
+        self.header = []
+        if sDir != '':
+            self.pl2_files = self.__getFileNames()
+            self.preProcessData()
 
     def getDataSpecifications(self, cfg, file):
         """Method that gets additional details about our data that cannot be stored in CSV files.
@@ -81,26 +82,34 @@ class AccessData:
         drinking_amounts = pd.DataFrame(data_object)
         return drinking_amounts
 
-    def preProcessData(self, target_file):
+    def preProcessData(self):
         """Main method of this class. When called, it will populate the pandas dataframe stored in self. with all power
         and coherence values from the data files in the directory pointed at by this class."""
         print("Getting data for Lasso")
         os.chdir(self.sDir)  # change the current working directory to where our data is stored.
 
-        # set the header for the dataframe
-        self.__createHeaderForBinaryClassifierCSV()
+        # set the header and rows for the dataframe
+        self.__buildHeader()
+
+        # open the Excel sheet with additional info
+        wb = openpyxl.load_workbook(self.cfg.excel_sheet)
+        ws = wb.active
 
         # iterate through all files and populate the pandas dataframe with power and coherence values
-        for row in self.cfg.excel_sheet:
-            if row['Sex'] is self.cfg.sex:
+        for row in ws.iter_rows(values_only=True):
+            if row[2] == self.cfg.sex:
                 for pl2_filename in self.pl2_files:
-                    if pl2_filename is row['file']:
-                        print("Processing file {} for Rat # {}".format(pl2_filename, row['Rat #']))
-                        self.__pl2ToCSV(pl2_filename)
+                    if pl2_filename == row[0]:
+                        print("Processing file {} for Rat # {}".format((pl2_filename + '.pl2'), row[1]))
+                        self.__pl2ToDictionaryRow((pl2_filename + '.pl2'))
+
+        # Turn Dictionary into Dataframe
+        self.dataframe = pd.DataFrame.from_dict(self.dFrameDict, orient='index', columns=self.header)
+        self.dataframe.head()
 
 
 
-    def __buildDataframe(self):
+    def __buildHeader(self):
         """This function creates the rows and columns for our dataframe. Since the header is 216 columns, it's much easier
         to create it programmatically"""
 
@@ -117,11 +126,9 @@ class AccessData:
             for j in range(0, 6):
                 header.append(self.coherence_channel_names[i] + self.band_names[j])
 
-        header.append('condition')
+        header.append('Condition')
 
-        self.dataframe.columns = header
-        self.dataframe.index = self.pl2_files
-        self.dataframe.head()
+        self.header = header
 
 
     def __splitSignal(self, f, signal):
@@ -170,9 +177,7 @@ class AccessData:
 
         return l
 
-
-    def __pl2ToCSV(self, filename):
-        # TODO needs refactoring into multiple functions. use voltsToRawAD in first loop only, not in second loop to save processing time. three loops: one for data access and cleaning, one for power, and one for coherence?
+    def __pl2ToDictionaryRow(self, filename):
         """Ths method accepts a pl2 file and converts its information into a row of data corresponding to the header of
         the pandas dataframe we're writing to."""
 
@@ -186,65 +191,75 @@ class AccessData:
             if channel.n > 0:  # if a channel has count > 0 then it has data
                 channel_count += 1
                 channel_numbers.append(channel_number)
-            channel_number += 1 # update the current channel's number
+            channel_number += 1  # update the current channel's number
 
         print("Detected {} active channels".format(channel_count))
 
+        # convert data in channels from volts to raw a/d
+        ad_array = []
+        for channel in channel_numbers:
+            print("Converting volts to a/d in channel {}".format(channel+1))
+            ad_info = pl2_ad(filename, channel)
+            ad = self.voltsToRawAD(ad_info.ad)
+            ad_array.append(ad)
+
+        # perform data cleaning
+        cleaned_ad_array = []
+        iterator = 1
+        for ad in ad_array:
+            print("Cleaning Channel {}".format(iterator))
+
+            # 1. 60 Hertz Filter
+            print("Applying 60hz Filter")
+            ad = self.__60HertzFilter(ad, ad_info.adfrequency)
+
+            # 2. Down-sampling
+            print("Applying Down-Sampling")
+            ad = self.__downSampling(ad, self.cfg.dwnSample, ad_info.adfrequency)
+
+            # 3. Threshold filter
+            #print("Applying Threshold Filter")
+            #ad = self.__noiseArtifactsFilter(ad, self.cfg.artifactThreshold, self.cfg.onset, self.cfg.offset, ad_info.adfrequency)
+
+            cleaned_ad_array.append(ad)
+            iterator += 1
+
+        del ad_array  # release memory of uncleaned data
+
+        # calculate power values for data
+        power_array = []
+        iterator = 0
+        for ad in cleaned_ad_array:
+            print("Processing Power for Channel {}".format(self.power_channel_names[iterator]))
+            f, Pxx = self.__calculateChannelPower(ad, ad_info.adfrequency)
+            power_array.append((f, Pxx))
+            iterator += 1
 
 
+        # calculate coherence values for data
+        iterator = 0
+        combo_list = list(combinations(channel_numbers, 2))  # get combinations of each 0-indexed channel number
+        coherence_array = []
+        for combo in combo_list:
+            print("Processing Coherence for Channel Pair {}".format(self.coherence_channel_names[iterator]))
+            ad1 = cleaned_ad_array[combo[0]]
+            ad2 = cleaned_ad_array[combo[1]]
+            f, Cxy = self.__calculateChannelCoherence(ad1, ad2, ad_info.adfrequency)
+            coherence_array.append((f, Cxy))
+            iterator += 1
 
+        # Split power signals into power bands and combine into one list
+        split_signal_array = []
+        for tup in power_array:
+            split_signal_array.extend(self.__splitSignal(tup[0], tup[1]))
 
+        # Split coherence signals into power bands and combine into one list
+        for tup in coherence_array:
+            split_signal_array.extend(self.__splitSignal(tup[0], tup[1]))
 
-
-        channels_list = []  # List to hold 0-indexed channel numbers instead of what is listed in the resource tuples
-        channel_number_iterator = 0  # reset iterator between files
-        one_thru_eight_iterator = 1  # iterator to count through all channels of a file
-
-
-        row = []
-        for channel in file_resource.ad:  # iterate over each channel in a file
-            if channel.n > 0:  # if a channel has count > 0 then it has data
-                print("Processing power for channel {}".format(one_thru_eight_iterator))
-                ad_info = pl2_ad(filename, channel_number_iterator)  # use pl2_ad to get a/d info from a channel
-
-                # convert volts in ad_info.ad to raw A/D values
-                #ad = self.voltsToRawAD(ad_info.ad)
-
-                # perform data cleaning here
-
-                # calculate power
-                f, Pxx = self.__calculateChannelPower(ad_info.ad, 200)#ad_info.adfrequency)  # Use welch() to calculate the power array from the list of LFPs in ad_info
-
-                # split power into 6 frequency bands
-                power_bands = self.__splitSignal(f, Pxx)
-
-                # add new values to row to be written to the csv later
-                for item in power_bands:
-                    row.append(item)
-                one_thru_eight_iterator += 1
-                channels_list.append(channel_number_iterator)  # add the channel number to a list for use later
-            channel_number_iterator += 1  # iterate to the next 0-indexed channel number
-
-        # calculate coherence
-        comboList = list(combinations(channels_list, 2))  # get combinations of each 0-indexed channel number
-
-        # iterate through all channel combos and get all coherence values split by frequency band
-        for channelCombo, column in zip(comboList, self.coherence_channel_names):
-            print("Processing coherence for channel pair {}".format(column))
-            ad_info1 = pl2_ad(filename, channelCombo[0])
-            ad_info2 = pl2_ad(filename, channelCombo[1])
-
-            # convert volts in ad_info.ad to raw A/D values
-            #ad1 = self.voltsToRawAD(ad_info1.ad)
-
-            # convert volts in ad_info.ad to raw A/D values
-            #ad2 = self.voltsToRawAD(ad_info2.ad)
-
-            f, Cxy = self.__calculateChannelCoherence(ad_info1.ad, ad_info2.ad, 200)#ad_info.adfrequency)
-            power_bands = self.__splitSignal(f, Cxy)
-            # add new values to row to be written to the csv later
-            for item in power_bands:
-                row.append(item)
+        
+        # Add info to dictionary
+        self.dFrameDict[filename] = split_signal_array
 
 
 
@@ -252,9 +267,13 @@ class AccessData:
         """Method for getting a list of file names from the directory pointed at by this class"""
         print("Getting file names")
         files = []
+        # open the Excel sheet with additional info
+        wb = openpyxl.load_workbook(self.cfg.excel_sheet)
+        ws = wb.active
+
         # For each file in a list of files in the directory
-        for f in self.cfg.excel_sheet:
-            files.append(f['file'])  # append it to our list of file names
+        for row in ws.iter_rows(values_only=True):
+            files.append(row[0])  # append it to our list of file names
         return files
 
     def __calculateChannelPower(self, ad, frequency):
@@ -283,37 +302,31 @@ class AccessData:
         return sig
 
 
-    def __noiseArtifactsFilter(self, sig, artifactThreshold, onset, offset):
+    def __noiseArtifactsFilter(self, sig, artifactThreshold, onset, offset, f):
         """Cleans the data for noise artifacts created by interference by sources like the rat bashing its head against the enclosure wall.
         Filter is performed by scanning the signal array for values greater than the threshold, then removing all values a fraction of a second before and after that value."""
 
-        rangesToRemove = []  # make list of ranges to remove after searching
+        ranges_to_remove = []  # make list of signals to remove after searching
+        onset = round(onset * f)
+        offset = round(offset * f)
 
         # iterate through array
-        endOfArray = len(sig)-1
+        end_of_array = len(sig)-1
         for i in range(len(sig)):
             if sig[i] >= artifactThreshold:  # if a value is greater than the threshold
-                if i-onset < 0:  # check for out-of-bounds-ing
-                    rangesToRemove.append([0, i + offset])  # add range to be removed to array
-                elif i+offset > endOfArray:
-                    rangesToRemove.append([i-onset, endOfArray])  # add range to be removed to array
-                elif i-onset < 0 and i+offset > endOfArray:
-                    rangesToRemove.append([0, endOfArray])
-                else:
-                    rangesToRemove.append([i-onset, i+offset])  # add range to be removed to array
+                ranges_to_remove.extend(range(i-onset, i+offset+1))
 
-        for r in rangesToRemove:
-            for i in range(r[0], r[1] + 1):
-                sig[i] = 'erase'
+        ranges_to_remove = list(filter(lambda x: x >= 0, ranges_to_remove))
+        ranges_to_remove = list(filter(lambda x: x <= end_of_array, ranges_to_remove))
 
-        cleanSig = []
-        for val in sig:
-            if val != 'erase':
-                cleanSig.append(val)
+        ranges_to_remove = list(set(ranges_to_remove))  # remove potential duplicates
 
+        for r in sorted(ranges_to_remove, reverse=True):
+            del sig[r]
 
+        clean_sig = sig
 
-        return cleanSig
+        return clean_sig
 
     def __downSampling(self, sig, dsf, adfreq):
         """Downsamples the data for faster processing. sig is the signal to be downsampled. dsf needs to be a divisor of adfreq, which is the sampling frequency."""
@@ -331,9 +344,9 @@ class AccessData:
 
 if __name__ == "__main__":
     cfg = Config()
-    accessObj = AccessData(r'C:\Users\aidan.nunn\Documents\Homework\CS 421\Binary_Predictor_Data', cfg)
-    dataframe = LoadData('test.csv')
-    target = accessObj.getDataSpecifications(cfg)
-    dataframe.df[''] = target['']
-    dataframe.printDataFrame()
+    accessObj = AccessData(r'D:\CS 421\Binary_Predictor_Data', cfg)
+    #dataframe = LoadData('test.csv')
+    #target = accessObj.getDataSpecifications(cfg)
+    #dataframe.df[''] = target['']
+    #dataframe.printDataFrame()
 
