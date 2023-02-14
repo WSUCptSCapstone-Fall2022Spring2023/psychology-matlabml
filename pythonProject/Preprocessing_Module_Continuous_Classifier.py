@@ -70,10 +70,9 @@ class AccessData:
             data = csv.DictReader(csvfile)
             for row in data:
                 da.append(row['g/kg'])
-
-        drinking_amounts = np.array(da)
-        target = pd.DataFrame({'Target': drinking_amounts}, columns=['Target'])
-        return target
+        d = {"g/kg": da}
+        drinking_amounts = pd.DataFrame(d)
+        return drinking_amounts
 
     def preProcessData(self, target_file):
         """Main method of this class. When called, it will populate a csv file with all power
@@ -301,12 +300,7 @@ class AccessData:
 if __name__ == "__main__":
     accessObj = AccessData(r'C:\Users\charl\Desktop\SampleSampleData1')
     dataframe = LoadData('test.csv')
+    target = accessObj.getTargetData(r'C:\Users\charl\Desktop\DrinkingData - CompSci.csv')
+    dataframe.df['g/kg'] = target['g/kg']
     dataframe.printDataFrame()
-
-    # features = accessObj.header
-    # target = accessObj.getTargetData(r'C:\Users\charl\Desktop\DrinkingData - CompSci.csv')
-    # print(features)
-    # print(target)
-
-    # dataObject = LoadData(r'C:\Users\charl\Desktop\SampleSampleData1\test.csv')
 
