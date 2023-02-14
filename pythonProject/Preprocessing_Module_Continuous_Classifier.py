@@ -1,7 +1,6 @@
 """This file contains the class which will preprocess inputted data files. It will have one class: AccessData. This
 class will upload data files to the program and be able to process those data files into data structures that can be
 used by our logic modules. """
-
 import os
 
 import numpy as np
@@ -244,10 +243,13 @@ class AccessData:
         arr = list(map(lambda x: round(x), arr))
         return arr
 
-    def __60HertzFilter(self, x, freq):
+    def __60HertzFilter(self, sig, freq):
         """Cleans the data for frequencies of 60Hz using a second order Chebyshev type 1 notch filter. This is because the machine used to collect data naturally produces
         this signal, so it cannot be used. x is array to be cleaned, freq is sampling frequency."""
 
+        b, a = scipy.signal.iirnotch(60, 30, freq)
+        sig = scipy.signal.filtfilt(b, a, sig)
+        return sig
 
     def __noiseArtifactsFilter(self, sig, artifactThreshold, onset, offset):
         """Cleans the data for noise artifacts created by interference by sources like the rat bashing its head against the enclosure wall.
