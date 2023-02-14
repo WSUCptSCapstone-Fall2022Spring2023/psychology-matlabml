@@ -257,7 +257,7 @@ class AccessData:
         for tup in coherence_array:
             split_signal_array.extend(self.__splitSignal(tup[0], tup[1]))
 
-        
+
         # Add info to dictionary
         self.dFrameDict[filename] = split_signal_array
 
