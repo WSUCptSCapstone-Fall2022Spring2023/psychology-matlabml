@@ -67,6 +67,8 @@ class AccessData:
             self.pl2_files = self.__getFileNames()
             self.preProcessData()
 
+        print(self.dataframe.to_string())
+
     def getDataSpecifications(self, cfg, file):
         """Method that gets additional details about our data that cannot be stored in CSV files.
         File is the csv or properly formatted Excel file we want to use.
@@ -99,13 +101,12 @@ class AccessData:
         for row in ws.iter_rows(values_only=True):
             if row[2] == self.cfg.sex:
                 for pl2_filename in self.pl2_files:
-                    if pl2_filename == row[0]:
-                        print("Processing file {} for Rat # {}".format((pl2_filename + '.pl2'), row[1]))
-                        self.__pl2ToDictionaryRow((pl2_filename + '.pl2'))
+                    if pl2_filename == (row[0] + '.pl2'):
+                        print("Processing file {} for Rat # {}".format(pl2_filename, row[1]))
+                        self.__pl2ToDictionaryRow(pl2_filename, row)
 
         # Turn Dictionary into Dataframe
         self.dataframe = pd.DataFrame.from_dict(self.dFrameDict, orient='index', columns=self.header)
-        self.dataframe.head()
 
 
 
@@ -177,7 +178,7 @@ class AccessData:
 
         return l
 
-    def __pl2ToDictionaryRow(self, filename):
+    def __pl2ToDictionaryRow(self, filename, row):
         """Ths method accepts a pl2 file and converts its information into a row of data corresponding to the header of
         the pandas dataframe we're writing to."""
 
@@ -257,6 +258,11 @@ class AccessData:
         for tup in coherence_array:
             split_signal_array.extend(self.__splitSignal(tup[0], tup[1]))
 
+        # Append Condition variable to end of array. 0 for Room Air, 1 for Vapor
+        if row[3] == 'Room Air':
+            split_signal_array.append(0)
+        if row[3] == 'Vapor':
+            split_signal_array.append(1)
 
         # Add info to dictionary
         self.dFrameDict[filename] = split_signal_array
@@ -267,13 +273,10 @@ class AccessData:
         """Method for getting a list of file names from the directory pointed at by this class"""
         print("Getting file names")
         files = []
-        # open the Excel sheet with additional info
-        wb = openpyxl.load_workbook(self.cfg.excel_sheet)
-        ws = wb.active
 
-        # For each file in a list of files in the directory
-        for row in ws.iter_rows(values_only=True):
-            files.append(row[0])  # append it to our list of file names
+        for f in os.listdir(self.sDir):
+            if f.endswith(self.fType):
+                files.append(f)
         return files
 
     def __calculateChannelPower(self, ad, frequency):
@@ -345,8 +348,4 @@ class AccessData:
 if __name__ == "__main__":
     cfg = Config()
     accessObj = AccessData(r'D:\CS 421\Binary_Predictor_Data', cfg)
-    #dataframe = LoadData('test.csv')
-    #target = accessObj.getDataSpecifications(cfg)
-    #dataframe.df[''] = target['']
-    #dataframe.printDataFrame()
 
