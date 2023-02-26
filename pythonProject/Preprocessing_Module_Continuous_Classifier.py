@@ -1,6 +1,7 @@
 """This file contains the class which will preprocess inputted data files. It will have one class: AccessData. This
 class will upload data files to the program and be able to process those data files into data structures that can be
 used by our logic modules. """
+
 import os
 
 import numpy as np
@@ -54,25 +55,16 @@ class AccessData:
 
         # Lists of channel names to be used in the below loops
         self.power_channel_names = ['Channel 1 Power', 'Channel 2 Power', 'Channel 3 Power', 'Channel 4 Power',
-                                    'Channel 5 Power', 'Channel 6 Power']
+                                    'Channel 5 Power', 'Channel 6 Power', 'Channel 7 Power', 'Channel 8 Power']
         self.coherence_channel_names = ['Coherence 1 & 2', 'Coherence 1 & 3', 'Coherence 1 & 4', 'Coherence 1 & 5',
-                                        'Coherence 1 & 6', 'Coherence 2 & 3', 'Coherence 2 & 4', 'Coherence 2 & 5',
-                                        'Coherence 2 & 6', 'Coherence 3 & 4', 'Coherence 3 & 5', 'Coherence 3 & 6',
-                                        'Coherence 4 & 5', 'Coherence 4 & 6', 'Coherence 5 & 6']
+                                        'Coherence 1 & 6', 'Coherence 1 & 7', 'Coherence 1 & 8', 'Coherence 2 & 3',
+                                        'Coherence 2 & 4', 'Coherence 2 & 5', 'Coherence 2 & 6', 'Coherence 2 & 7',
+                                        'Coherence 2 & 8', 'Coherence 3 & 4', 'Coherence 3 & 5', 'Coherence 3 & 6',
+                                        'Coherence 3 & 7', 'Coherence 3 & 8', 'Coherence 4 & 5', 'Coherence 4 & 6',
+                                        'Coherence 4 & 7', 'Coherence 4 & 8', 'Coherence 5 & 6', 'Coherence 5 & 7',
+                                        'Coherence 5 & 8', 'Coherence 6 & 7', 'Coherence 6 & 8', 'Coherence 7 & 8']
         self.band_names = [' Delta', ' Theta', ' Alpha', ' Beta', ' Low Gamma', ' High Gamma']
         self.header = []
-        self.preProcessData('test.csv')
-
-    def getTargetData(self, file):
-        """Method that returns a dataframe of the target values from a csv"""
-        da = []
-        with open(file, newline='') as csvfile:
-            data = csv.DictReader(csvfile)
-            for row in data:
-                da.append(row['g/kg'])
-        d = {"g/kg": da}
-        drinking_amounts = pd.DataFrame(d)
-        return drinking_amounts
 
     def preProcessData(self, target_file):
         """Main method of this class. When called, it will populate a csv file with all power
@@ -100,12 +92,12 @@ class AccessData:
         header = []
 
         # power channels + bands
-        for i in range(0, 6):
+        for i in range(0, 8):
             for j in range(0, 6):
                 header.append(self.power_channel_names[i] + self.band_names[j])
 
         # coherence channels + bands
-        for i in range(0, 15):
+        for i in range(0, 28):
             for j in range(0, 6):
                 header.append(self.coherence_channel_names[i] + self.band_names[j])
 
@@ -243,13 +235,10 @@ class AccessData:
         arr = list(map(lambda x: round(x), arr))
         return arr
 
-    def __60HertzFilter(self, sig, freq):
+    def __60HertzFilter(self, x, freq):
         """Cleans the data for frequencies of 60Hz using a second order Chebyshev type 1 notch filter. This is because the machine used to collect data naturally produces
         this signal, so it cannot be used. x is array to be cleaned, freq is sampling frequency."""
 
-        b, a = scipy.signal.iirnotch(60, 30, freq)
-        sig = scipy.signal.filtfilt(b, a, sig)
-        return sig
 
     def __noiseArtifactsFilter(self, sig, artifactThreshold, onset, offset):
         """Cleans the data for noise artifacts created by interference by sources like the rat bashing its head against the enclosure wall.
@@ -283,24 +272,16 @@ class AccessData:
 
         return cleanSig
 
-    def __downSampling(self, sig, dsf, adfreq):
-        """Downsamples the data for faster processing. sig is the signal to be downsampled. dsf needs to be a divisor of adfreq, which is the sampling frequency."""
 
-        if adfreq % dsf != 0:
-            raise Exception("Downsampling Frequency is not a divisor of Sampling Frequency")
 
-        sig = scipy.signal.decimate(sig, dsf)
-
-        return sig
+    def __downSampling(self, sig, dwnSamplingFactor):
+        """Downsamples the data for faster processing. dwnSamplingFactor needs to be a divisor of freq, which is the sampling frequency."""
 
 
 
 
 
 if __name__ == "__main__":
-    accessObj = AccessData(r'C:\Users\charl\Desktop\SampleSampleData1')
+    accessObj = AccessData(r'C:\Users\aidan.nunn\Documents\Homework\CS 421\SampleSampleData')
     dataframe = LoadData('test.csv')
-    target = accessObj.getTargetData(r'C:\Users\charl\Desktop\DrinkingData - CompSci.csv')
-    dataframe.df['g/kg'] = target['g/kg']
     dataframe.printDataFrame()
-
