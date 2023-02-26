@@ -1,15 +1,17 @@
 import unittest  # import unittest module
 
 import numpy
+import numpy as np
 
-from Preprocessing_Module_Binary_Classifier import AccessData, LoadData  # import classes from file to be tested
+from Preprocessing_Module_Binary_Classifier import AccessData, LoadData, Config  # import classes from file to be tested
 
 
 class TestAccessData(unittest.TestCase):
     """This class contains unit tests for the Access Data class"""
     def setUp(self):
         """This method is called before every test case. Please create a directory for AccessData to open with one .pl2 file in it, otherwise testGetFileNames() will fail."""
-        self.AccessDataObject = AccessData(r'C:\Users\aidan.nunn\Documents\Homework\CS 421')
+        cfg = Config()
+        self.AccessDataObject = AccessData('', cfg)
         self.file = open("test_file.csv", "w")
 
     def tearDown(self):
@@ -105,27 +107,26 @@ class TestAccessData(unittest.TestCase):
         self.assertEqual(expectedResult, actualResult)
 
     def testNoiseArtifactsFilter(self):
-        """Unit test of the noiseArtifactsFilter() method. Inputs for filtering are a 1.5 threshold, 1 onset, and 2 offset."""
+        """Unit test of the noiseArtifactsFilter() method. Inputs for filtering are a 1.5 threshold, 1 onset, 2 offset, and a frequency of 1."""
 
         input = [2, -0.24, 0.8, 0.76, 0.01, 0.04, 0.07, 7, 0.09, 0.08, 0.04, 0.9, 1.5, 0.001, 81, 0.5, -1.7, 0.4, -1, -4, 0.05, -0.9, 8]
 
         expectedResult = [0.76, 0.01, 0.04, 0.04, 0.4, -1, -4, 0.05]
 
-        actualResult = self.AccessDataObject._AccessData__noiseArtifactsFilter(input, 1.5, 1, 2)
+        actualResult = self.AccessDataObject._AccessData__noiseArtifactsFilter(input, 1.5, 1, 2, 1)
 
         self.assertEqual(expectedResult, actualResult)
 
-    def testDownSampling(self):
-
-        input = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30]
-
-        expectedResult = [0.9523711684276455, 5.966882643370076, 10.815006002654167, 15.909782205158153, 20.67519282567084, 25.839229480847393]
-
-        actualResult = self.AccessDataObject._AccessData__downSampling(input, 5, 2000)
-
-        self.assertTrue(numpy.array_equiv(expectedResult, actualResult))
-
-
+    # def testDownSampling(self):
+    #     """Unit test of downSampling() method. Down sampling by a rate of 5"""
+    #
+    #     input = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30]
+    #
+    #     expectedResult = [0.9523711684276455, 5.966882643370076, 10.815006002654167, 15.909782205158153, 20.67519282567084, 25.839229480847393]
+    #
+    #     actualResult = self.AccessDataObject._AccessData__downSampling(input, 5, 2000)
+    #
+    #     self.assertTrue(numpy.array_equiv(expectedResult, actualResult))
 
 class TestLoadData(unittest.TestCase):
     """This class contains unit tests for the Load Data class"""
