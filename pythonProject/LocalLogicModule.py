@@ -4,7 +4,7 @@ It will have one class, LocalLogic, which holds the algorithm for testing the ac
 """
 
 from sklearn.linear_model import Lasso
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, r2_score
 from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import train_test_split
 from Preprocessing_Module_Binary_Classifier import *
@@ -14,7 +14,7 @@ class LocalLogicModule:
 
     def __init__(self, lambda_val):
         self.lambda_val = lambda_val
-        self.model = None
+        self.model = 0
 
     def fit(self, x_train, y_train):
         self.model.fit(x_train, y_train)
@@ -28,65 +28,54 @@ class LocalLogicModule:
     def test_accuracy(self, y_true, y_pred):
         return accuracy_score(y_true, y_pred)
 
-    def graph_accuracy(self, mse_arr, coef_arr):
+    #def graph_accuracy(self, mse_arr, coef_arr):
+     #   plt.plot(self.lambda_val, mse_arr)  # plot a graph of lambda values vs MSEs
+      #  plt.xlabel("Lambda Value")
+       # plt.ylabel("Mean Squared Error")
+      #  plt.show()  # open window displaying graph
+      #  for coef in coef_arr:
+       #    print(coef)
 
-        plt.plot(self.lambda_val, mse_arr)  # plot a graph of lambda values vs MSEs
-        plt.xlabel("Lambda Value")
-        plt.ylabel("Mean Squared Error")
-        plt.show()  # open window displaying graph
-        for coef in coef_arr:
-           print(coef)
-
-    def train_binary_model_vapor_room_air(self):
+    def train_binary_model_vapor_room_air(self, dataframe):
         """Method which builds a model for predicting on if a rodent is exposed to room air or alcohol vapor"""
         print("Building Room Air vs Vapor Model")
 
-        # make class object for configurations
-        cfg = Config()
-
-        # make class object with data formatted into a dataframe
-        print("Preprocessing data")
-        access_obj = AccessData(r'D:\CS 421\Binary_Predictor_Data', cfg)
-
-        print("Training Model")
         # set the target condition
         target = 'Condition'
 
-        # set learning rate
-        learning_rate = 0.001
-
         # create model
-        model = Lasso(self.lambda_val)
-
-        # set current model to what was just produced
-        self.model = model
+        self.model = Lasso(alpha=self.lambda_val, max_iter=1000000)
 
         # retrieve data from dataframe
-        y = access_obj.dataframe[target]
-        features = access_obj.header
+        y = dataframe[target]
+        features = list(dataframe.columns.values)
         features.remove('Condition')
-        x = access_obj.dataframe[features]
+        features.remove('Unnamed: 0')
+        x = dataframe[features]
 
-        # Split data
-        print("Splitting data")
-        x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, shuffle=True)
+        # run for some number of epochs
+        epochs = 10
+        for epoch in range(epochs):
+            print("\n\nRunning Epoch Number {}".format(epoch + 1))
 
-        # fit data to the model
-        print("Fitting Data")
-        self.fit(x_train, y_train)
+            # Split data
+            print("Splitting data")
+            x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.05, shuffle=True)
 
-        # make a prediction on the fit
-        y_pred = self.predict(x_test)
+            # fit data to the model
+            print("Fitting Data")
+            self.fit(x_train, y_train)
 
-        # calculate the mean squared error of the accuracy
-        mse_model = self.calculate_mse(y_pred, y_test)
-
-        # print the model's accuracy
-        print("\nLasso score is {}".format(self.test_accuracy(list(y_test['Condition']), y_pred)))
+            # make a prediction on the fit and print accuracy
+            y_prediction = self.predict(x_test)
+            print("Mean Squared Error: {}".format(np.sqrt(mean_squared_error(y_test, y_prediction))))
+            print("R Squared Score: {}".format(r2_score(y_test, y_prediction)))
 
 
 
 if __name__ == "__main__":
-    c = LocalLogicModule(0.001)
-    c.train_binary_model_vapor_room_air()
+    loader = LoadData(r'D:\CS 421\Binary_Predictor_Data\output.xlsx')
+    model_object = LocalLogicModule(0.1)
+    model_object.train_binary_model_vapor_room_air(loader.df)
+    print("\n\nDone\n\n")
 
