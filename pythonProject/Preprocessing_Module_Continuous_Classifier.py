@@ -3,6 +3,7 @@ class will upload data files to the program and be able to process those data fi
 used by our logic modules. """
 import os
 
+from LocalLogicModule import LocalLogicModule
 import numpy as np
 import pandas as pd
 import scipy.signal
@@ -12,6 +13,9 @@ from pypl2 import pl2_ad, pl2_info
 from loadingBar import printProgressBar
 from matplotlib import pyplot as plt
 from statistics import fmean
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import Lasso
+from sklearn.metrics import mean_squared_error
 import csv
 
 class Config:
@@ -296,8 +300,26 @@ class AccessData:
 
 
 if __name__ == "__main__":
-    accessObj = AccessData(r'C:\Users\charl\Desktop\SampleSampleData1')
+    accessObj = AccessData(r'C:\Users\charl\Documents\SampleData')
     dataframe = LoadData('test.csv')
-    target = accessObj.getTargetData(r'C:\Users\charl\Desktop\DrinkingData - CompSci.csv')
+    target = accessObj.getTargetData(r'C:\Users\charl\Downloads\DrinkingData - CompSci.csv')
     dataframe.df['g/kg'] = target['g/kg']
     dataframe.printDataFrame()
+
+    # Input Variables
+    X = dataframe.df.iloc[:, :-1]
+    # Output Variables
+    y = dataframe.df.iloc[:, -1]
+
+    X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=0)
+
+    lambda_vals = [0.000001, 0.0001, 0.005, 0.01, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 1]  # set lambda. review documentation for explanation on what this does
+    for val in lambda_vals:
+        logic_module = LocalLogicModule(val, Lasso(val))  # create lasso model
+        logic_module.Fit(X_train, y_train)  # fit lasso model to our training data
+        y_pred = logic_module.Predict(X_test)  # make a prediction
+        mse_lasso = logic_module.MSE(y_pred, y_test)  # calculate the mean squared error of the prediction
+        print(("\nLasso MSE with Lambda={} is {}").format(val, mse_lasso))
+
+
+
