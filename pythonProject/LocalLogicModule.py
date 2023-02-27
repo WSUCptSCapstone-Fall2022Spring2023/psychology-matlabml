@@ -44,7 +44,8 @@ class LocalLogicModule:
         target = 'Condition'
 
         # create model
-        self.model = Lasso(alpha=self.lambda_val, max_iter=1000000)
+        # max_iter is the maximun number of iterations we run to try to converge the model
+        self.model = Lasso(alpha=self.lambda_val, max_iter=10000000)
 
         # retrieve data from dataframe
         y = dataframe[target]
@@ -53,29 +54,26 @@ class LocalLogicModule:
         features.remove('Unnamed: 0')
         x = dataframe[features]
 
-        # run for some number of epochs
-        epochs = 10
-        for epoch in range(epochs):
-            print("\n\nRunning Epoch Number {}".format(epoch + 1))
+        # Split data
+        print("Splitting Data")
+        x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, shuffle=True)
 
-            # Split data
-            print("Splitting data")
-            x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.05, shuffle=True)
+        # fit data to the model
+        print("Fitting Data")
+        self.fit(x_train, y_train)
 
-            # fit data to the model
-            print("Fitting Data")
-            self.fit(x_train, y_train)
-
-            # make a prediction on the fit and print accuracy
-            y_prediction = self.predict(x_test)
-            print("Mean Squared Error: {}".format(np.sqrt(mean_squared_error(y_test, y_prediction))))
-            print("R Squared Score: {}".format(r2_score(y_test, y_prediction)))
+        # make a prediction on the fit and print accuracy
+        print("Predicting on Data")
+        y_prediction = self.predict(x_test)
+        print("Mean Squared Error: {}".format((mean_squared_error(y_test, y_prediction))))
+        print("R Squared Score: {}".format(r2_score(y_test, y_prediction)))
 
 
 
 if __name__ == "__main__":
     loader = LoadData(r'D:\CS 421\Binary_Predictor_Data\output.xlsx')
-    model_object = LocalLogicModule(0.1)
+    learning_rate = 0.000001 # this value is necessary for the model to converge
+    model_object = LocalLogicModule(learning_rate)
     model_object.train_binary_model_vapor_room_air(loader.df)
     print("\n\nDone\n\n")
 

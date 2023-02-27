@@ -330,8 +330,8 @@ class AccessData:
 
 
 if __name__ == "__main__":
-    #cfg = Config()
-    #accessObj = AccessData(r'D:\CS 421\Binary_Predictor_Data', cfg)
+    cfg = Config()
+    accessObj = AccessData(r'D:\CS 421\Binary_Predictor_Data', cfg)
 
     loader = LoadData(r'D:\CS 421\Binary_Predictor_Data\output.xlsx')
     loader.printDataFrame()
