@@ -303,4 +303,3 @@ if __name__ == "__main__":
     target = accessObj.getTargetData(r'C:\Users\charl\Desktop\DrinkingData - CompSci.csv')
     dataframe.df['g/kg'] = target['g/kg']
     dataframe.printDataFrame()
-

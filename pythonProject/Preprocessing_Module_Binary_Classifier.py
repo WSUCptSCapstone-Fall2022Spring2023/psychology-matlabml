@@ -28,12 +28,7 @@ class LoadData:
     """Class used to load a CSV file of data into a pandas dataframe for use in the logic modules"""
 
     def __init__(self, file):
-        self.df = pd.read_csv(file)
-
-    def __setDataframeCell(self, index, column, value):
-        """Method for setting the cell of a dataframe. This function is technically trivial, but makes the code in
-        this class more readable. """
-        self.df.at[index, column] = value
+        self.df = pd.read_excel(file)
 
     def printDataFrame(self):
         """Method for printing the dataframe to a terminal window."""
@@ -67,22 +62,8 @@ class AccessData:
             self.pl2_files = self.__getFileNames()
             self.preProcessData()
 
-        print(self.dataframe.to_string())
-
-    def getDataSpecifications(self, cfg, file):
-        """Method that gets additional details about our data that cannot be stored in CSV files.
-        File is the csv or properly formatted Excel file we want to use.
-        cfg is the config settings we are using.
-        Outputs are stored in the CSV file that holds data processed from the .pl2 files."""
-        data_array = []
-        with open(file, newline='') as csvfile:
-            data = csv.DictReader(csvfile)
-            for row in data:
-                if row['Sex'] == cfg.sex:  # if statement to get only animals of the sex we are testing on
-                    data_array.append(row['Condition'])
-        data_object = {"condition": data_array}
-        drinking_amounts = pd.DataFrame(data_object)
-        return drinking_amounts
+        #print(self.dataframe.to_string())
+        self.saveDataframe()
 
     def preProcessData(self):
         """Main method of this class. When called, it will populate the pandas dataframe stored in self. with all power
@@ -108,7 +89,10 @@ class AccessData:
         # Turn Dictionary into Dataframe
         self.dataframe = pd.DataFrame.from_dict(self.dFrameDict, orient='index', columns=self.header)
 
-
+    def saveDataframe(self):
+        """Method that allows us to save our dataframe to an Excel spreadsheet. This way, we don't have to process the data every time we want to use it."""
+        with pd.ExcelWriter('output.xlsx') as writer:
+            self.dataframe.to_excel(writer)
 
     def __buildHeader(self):
         """This function creates the rows and columns for our dataframe. Since the header is 216 columns, it's much easier
@@ -346,6 +330,9 @@ class AccessData:
 
 
 if __name__ == "__main__":
-    cfg = Config()
-    accessObj = AccessData(r'D:\CS 421\Binary_Predictor_Data', cfg)
+    #cfg = Config()
+    #accessObj = AccessData(r'D:\CS 421\Binary_Predictor_Data', cfg)
+
+    loader = LoadData(r'D:\CS 421\Binary_Predictor_Data\output.xlsx')
+    loader.printDataFrame()
 
