@@ -28,12 +28,7 @@ class LoadData:
     """Class used to load a CSV file of data into a pandas dataframe for use in the logic modules"""
 
     def __init__(self, file):
-        self.df = pd.read_csv(file)
-
-    def __setDataframeCell(self, index, column, value):
-        """Method for setting the cell of a dataframe. This function is technically trivial, but makes the code in
-        this class more readable. """
-        self.df.at[index, column] = value
+        self.df = pd.read_excel(file)
 
     def printDataFrame(self):
         """Method for printing the dataframe to a terminal window."""
@@ -335,6 +330,9 @@ class AccessData:
 
 
 if __name__ == "__main__":
-    cfg = Config()
-    accessObj = AccessData(r'D:\CS 421\Binary_Predictor_Data', cfg)
+    #cfg = Config()
+    #accessObj = AccessData(r'D:\CS 421\Binary_Predictor_Data', cfg)
+
+    loader = LoadData(r'D:\CS 421\Binary_Predictor_Data\output.xlsx')
+    loader.printDataFrame()
 
