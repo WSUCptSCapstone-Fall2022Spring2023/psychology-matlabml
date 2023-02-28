@@ -28,13 +28,7 @@ class LocalLogicModule:
     def test_accuracy(self, y_true, y_pred):
         return accuracy_score(y_true, y_pred)
 
-    #def graph_accuracy(self, mse_arr, coef_arr):
-     #   plt.plot(self.lambda_val, mse_arr)  # plot a graph of lambda values vs MSEs
-      #  plt.xlabel("Lambda Value")
-       # plt.ylabel("Mean Squared Error")
-      #  plt.show()  # open window displaying graph
-      #  for coef in coef_arr:
-       #    print(coef)
+
 
     def train_binary_model_vapor_room_air(self, dataframe):
         """Method which builds a model for predicting on if a rodent is exposed to room air or alcohol vapor"""
@@ -44,7 +38,7 @@ class LocalLogicModule:
         target = 'Condition'
 
         # create model
-        # max_iter is the maximun number of iterations we run to try to converge the model
+        # max_iter is the maximum number of iterations we run to try to converge the model
         self.model = Lasso(alpha=self.lambda_val, max_iter=10000000)
 
         # retrieve data from dataframe
@@ -62,18 +56,33 @@ class LocalLogicModule:
         print("Fitting Data")
         self.fit(x_train, y_train)
 
-        # make a prediction on the fit and print accuracy
-        print("Predicting on Data")
-        y_prediction = self.predict(x_test)
-        print("Mean Squared Error: {}".format((mean_squared_error(y_test, y_prediction))))
-        print("R Squared Score: {}".format(r2_score(y_test, y_prediction)))
+        return self.model.score(x_test, y_test)
 
+    def graph_lasso_accuracy(self, dataframe, epochs):
+        """This method fits data to a model a number of times equal to the epochs value,
+        and then graphs the accuracy over a series of models"""
+
+        accuracy_arr = []
+        for epoch in range(epochs):
+            print("On Epoch {} of {}".format(epoch, epochs))
+            # train the model
+            accuracy = self.train_binary_model_vapor_room_air(dataframe)
+            accuracy_arr.append(accuracy)
+            print("Accuracy: {}".format(accuracy))
+
+        plt.plot(range(1, epochs+1), accuracy_arr)
+        plt.xlabel("Fit Epoch")
+        plt.ylabel("Lasso Score")
+        plt.show()  # open window displaying graph
 
 
 if __name__ == "__main__":
-    loader = LoadData(r'D:\CS 421\Binary_Predictor_Data\output.xlsx')
-    learning_rate = 0.000001 # this value is necessary for the model to converge
+    loader = LoadData(r'D:\CS 421\Binary_Predictor_Data\dataframe_binary_females.xlsx')
+    learning_rate = 0.01
     model_object = LocalLogicModule(learning_rate)
-    model_object.train_binary_model_vapor_room_air(loader.df)
+    #model_object.train_binary_model_vapor_room_air(loader.df)
+
+    model_object.graph_lasso_accuracy(loader.df, 100)
+
     print("\n\nDone\n\n")
 
