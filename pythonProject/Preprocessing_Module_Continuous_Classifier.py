@@ -3,6 +3,8 @@ class will upload data files to the program and be able to process those data fi
 used by our logic modules. """
 import os
 
+import openpyxl as openpyxl
+
 from LocalLogicModule import LocalLogicModule
 import numpy as np
 import pandas as pd
@@ -27,13 +29,15 @@ class Config:
         self.artifactThreshold = 1.5
         self.onset = 0.0125  # 25 values prior
         self.offset = 0.5  # 1000 values after
+        self.sex = 'F'  # set to 'F' to process data for female models
+        self.excel_sheet = r'C:\Users\charl\Downloads\Sex Differences_Alcohol SA Cohort #3 - Copy(1).xlsx'
 
 
 class LoadData:
     """Class used to load a CSV file of data into a pandas dataframe for use in the logic modules"""
 
     def __init__(self, file):
-        self.df = pd.read_csv(file)
+        self.df = pd.read_excel(file)
 
     def __setDataframeCell(self, index, column, value):
         """Method for setting the cell of a dataframe. This function is technically trivial, but makes the code in
@@ -51,10 +55,12 @@ class AccessData:
     in the program. The method getDataForLasso() can be called to populate data into a pandas dataframe located in this class.
     The class object will hold this dataframe."""
 
-    def __init__(self, sDir):
+    def __init__(self, sDir, cfg):
         self.sDir = sDir
+        self.cfg = cfg
         self.fType = '.pl2'  # File type we are looking for
-        self.files = self.__getFileNames()
+        self.dFrameDict = {}
+        self.dataframe = pd.DataFrame()
 
         # Lists of channel names to be used in the below loops
         self.power_channel_names = ['Channel 1 Power', 'Channel 2 Power', 'Channel 3 Power', 'Channel 4 Power',
@@ -65,38 +71,52 @@ class AccessData:
                                         'Coherence 4 & 5', 'Coherence 4 & 6', 'Coherence 5 & 6']
         self.band_names = [' Delta', ' Theta', ' Alpha', ' Beta', ' Low Gamma', ' High Gamma']
         self.header = []
-        self.preProcessData('test.csv')
+        if sDir != '':
+            self.pl2_files = self.__getFileNames()
+            self.preProcessData()
 
-    def getTargetData(self, file):
+        self.saveDataframe()
+
+    def getTargetData(self, target_file, pl_file):
         """Method that returns a dataframe of the target values from a csv"""
         da = []
-        with open(file, newline='') as csvfile:
+        with open(target_file, newline='') as csvfile:
             data = csv.DictReader(csvfile)
             for row in data:
+
                 da.append(row['g/kg'])
         d = {"g/kg": da}
         drinking_amounts = pd.DataFrame(d)
         return drinking_amounts
 
-    def preProcessData(self, target_file):
+    def saveDataframe(self):
+        """Method that allows us to save our dataframe to an Excel spreadsheet. This way, we don't have to process the data every time we want to use it."""
+        with pd.ExcelWriter('output.xlsx') as writer:
+            self.dataframe.to_excel(writer)
+
+    def preProcessData(self):
         """Main method of this class. When called, it will populate a csv file with all power
         and coherence values from the data files in the directory pointed at by this class. """
         print("Getting data for Lasso")
         os.chdir(self.sDir)  # change the current working directory to where our data is stored.
 
         # open target csv file for write
-        f = open(target_file, 'w', newline='')
-        writer = csv.writer(f)
-        self.__createHeaderForBinaryClassifierCSV()
-        writer.writerow(self.header)
-        # iterate through all files and populate the pandas dataframe with power values
-        for filename in self.files:
-            print("Processing file {}".format(filename))
-            self.__pl2ToCSV(filename, writer)
+        self.__buildHeader()
+        # open the Excel sheet with additional info
+        wb = openpyxl.load_workbook(self.cfg.excel_sheet)
+        ws = wb.active
 
-        f.close()
+        # iterate through all files and populate the pandas dataframe with power and coherence values
+        for row in ws.iter_rows(values_only=True):
+            if row[2] == self.cfg.sex:
+                for pl2_filename in self.pl2_files:
+                    if pl2_filename == (row[0] + '.pl2'):
+                        print("Processing file {} for Rat # {}".format(pl2_filename, row[1]))
+                        self.__pl2ToDictionaryRow(pl2_filename, row)
 
-    def __createHeaderForBinaryClassifierCSV(self):
+        self.dataframe = pd.DataFrame.from_dict(self.dFrameDict, orient='index', columns=self.header)
+
+    def __buildHeader(self):
         """This function creates the header for our csv output file. Since the header is 216 columns, it's much easier
         to create it programmatically"""
 
@@ -162,64 +182,6 @@ class AccessData:
 
         return l
 
-
-    def __pl2ToCSV(self, filename, writer):
-        # TODO needs refactoring into multiple functions. use voltsToRawAD in first loop only, not in second loop to save processing time. three loops: one for data access and cleaning, one for power, and one for coherence?
-        """Ths method accepts a pl2 file and converts its information into a row of data corresponding to the header of
-        the CSV file we're writing to. It prints the row to the file."""
-        channels_list = []  # List to hold 0-indexed channel numbers instead of what is listed in the resource tuples
-        channel_number_iterator = 0  # reset iterator between files
-        one_thru_eight_iterator = 1  # iterator to count thru all 8 channels of a file
-        file_resource = pl2_info(filename)
-
-        row = []
-        for channel in file_resource.ad:  # iterate over each channel in a file (8 relevant channels per file)
-            if channel.n > 0:  # if a channel has count > 0 then it has data
-                print("Processing power for channel {}".format(one_thru_eight_iterator))
-                ad_info = pl2_ad(filename, channel_number_iterator)  # use pl2_ad to get a/d info from a channel
-
-                # convert volts in ad_info.ad to raw A/D values
-                #ad = self.voltsToRawAD(ad_info.ad)
-
-                # perform data cleaning here
-
-                # calculate power
-                f, Pxx = self.__calculateChannelPower(ad_info.ad, 200)#ad_info.adfrequency)  # Use welch() to calculate the power array from the list of LFPs in ad_info
-
-                # split power into 6 frequency bands
-                power_bands = self.__splitSignal(f, Pxx)
-
-                # add new values to row to be written to the csv later
-                for item in power_bands:
-                    row.append(item)
-                one_thru_eight_iterator += 1
-                channels_list.append(channel_number_iterator)  # add the channel number to a list for use later
-            channel_number_iterator += 1  # iterate to the next 0-indexed channel number
-
-        # calculate coherence
-        comboList = list(combinations(channels_list, 2))  # get combinations of each 0-indexed channel number
-
-        # iterate through all channel combos and get all coherence values split by frequency band
-        for channelCombo, column in zip(comboList, self.coherence_channel_names):
-            print("Processing coherence for channel pair {}".format(column))
-            ad_info1 = pl2_ad(filename, channelCombo[0])
-            ad_info2 = pl2_ad(filename, channelCombo[1])
-
-            # convert volts in ad_info.ad to raw A/D values
-            #ad1 = self.voltsToRawAD(ad_info1.ad)
-
-            # convert volts in ad_info.ad to raw A/D values
-            #ad2 = self.voltsToRawAD(ad_info2.ad)
-
-            f, Cxy = self.__calculateChannelCoherence(ad_info1.ad, ad_info2.ad, 200)#ad_info.adfrequency)
-            power_bands = self.__splitSignal(f, Cxy)
-            # add new values to row to be written to the csv later
-            for item in power_bands:
-                row.append(item)
-
-
-        writer.writerow(row)
-
     def __getFileNames(self):
         """Method for getting a list of file names from the directory pointed at by this class"""
         print("Getting file names")
@@ -229,6 +191,93 @@ class AccessData:
             if f.endswith(self.fType):  # if the file ends with our target file type
                 files.append(f)  # append it to our list of file names
         return files
+
+    def __pl2ToDictionaryRow(self, filename, row):
+        """Ths method accepts a pl2 file and converts its information into a row of data corresponding to the header of
+        the pandas dataframe we're writing to."""
+
+        # count the number of active channels and store their numbers
+        file_resource = pl2_info(filename)
+        channel_count = 0
+        channel_number = 0
+        channel_numbers = []
+
+        for channel in file_resource.ad:
+            if channel.n > 0:  # if a channel has count > 0 then it has data
+                channel_count += 1
+                channel_numbers.append(channel_number)
+            channel_number += 1  # update the current channel's number
+
+        print("Detected {} active channels".format(channel_count))
+
+        # convert data in channels from volts to raw a/d
+        ad_array = []
+        for channel in channel_numbers:
+            print("Converting volts to a/d in channel {}".format(channel + 1))
+            ad_info = pl2_ad(filename, channel)
+            ad = self.voltsToRawAD(ad_info.ad)
+            ad_array.append(ad)
+
+        # perform data cleaning
+        cleaned_ad_array = []
+        iterator = 1
+        for ad in ad_array:
+            print("Cleaning Channel {}".format(iterator))
+
+            # 1. 60 Hertz Filter
+            print("Applying 60hz Filter")
+            ad = self.__60HertzFilter(ad, ad_info.adfrequency)
+
+            # 2. Down-sampling
+            print("Applying Down-Sampling")
+            ad = self.__downSampling(ad, self.cfg.dwnSample, ad_info.adfrequency)
+
+            # 3. Threshold filter
+            # print("Applying Threshold Filter")
+            # ad = self.__noiseArtifactsFilter(ad, self.cfg.artifactThreshold, self.cfg.onset, self.cfg.offset, ad_info.adfrequency)
+
+            cleaned_ad_array.append(ad)
+            iterator += 1
+
+        del ad_array  # release memory of uncleaned data
+
+        # calculate power values for data
+        power_array = []
+        iterator = 0
+        for ad in cleaned_ad_array:
+            print("Processing Power for Channel {}".format(self.power_channel_names[iterator]))
+            f, Pxx = self.__calculateChannelPower(ad, ad_info.adfrequency)
+            power_array.append((f, Pxx))
+            iterator += 1
+
+        # calculate coherence values for data
+        iterator = 0
+        combo_list = list(combinations(channel_numbers, 2))  # get combinations of each 0-indexed channel number
+        coherence_array = []
+        for combo in combo_list:
+            print("Processing Coherence for Channel Pair {}".format(self.coherence_channel_names[iterator]))
+            ad1 = cleaned_ad_array[combo[0]]
+            ad2 = cleaned_ad_array[combo[1]]
+            f, Cxy = self.__calculateChannelCoherence(ad1, ad2, ad_info.adfrequency)
+            coherence_array.append((f, Cxy))
+            iterator += 1
+
+        # Split power signals into power bands and combine into one list
+        split_signal_array = []
+        for tup in power_array:
+            split_signal_array.extend(self.__splitSignal(tup[0], tup[1]))
+
+        # Split coherence signals into power bands and combine into one list
+        for tup in coherence_array:
+            split_signal_array.extend(self.__splitSignal(tup[0], tup[1]))
+
+        # Calculate the amount of alcohol consumed
+        alcohol_amount = (0.1*(0.1*row[7]))/(row[6]/1000)
+        # Append drinking amount to end of array.
+        split_signal_array.append(alcohol_amount)
+
+        # Add info to dictionary
+        self.dFrameDict[filename] = split_signal_array
 
     def __calculateChannelPower(self, ad, frequency):
         """Method for calculating the power values of a channel's LFP data. This function is trivial, but useful
@@ -300,26 +349,10 @@ class AccessData:
 
 
 if __name__ == "__main__":
-    accessObj = AccessData(r'C:\Users\charl\Documents\SampleData')
-    dataframe = LoadData('test.csv')
-    target = accessObj.getTargetData(r'C:\Users\charl\Downloads\DrinkingData - CompSci.csv')
-    dataframe.df['g/kg'] = target['g/kg']
+    # cfg = Config()
+    # accessObj = AccessData(r'C:\Users\charl\Documents\SampleData', cfg)
+    dataframe = LoadData(r'C:\Users\charl\Desktop\PreprocessedFemaleData.xlsx')
     dataframe.printDataFrame()
-
-    # Input Variables
-    X = dataframe.df.iloc[:, :-1]
-    # Output Variables
-    y = dataframe.df.iloc[:, -1]
-
-    X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=0)
-
-    lambda_vals = [0.000001, 0.0001, 0.005, 0.01, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 1]  # set lambda. review documentation for explanation on what this does
-    for val in lambda_vals:
-        logic_module = LocalLogicModule(val, Lasso(val))  # create lasso model
-        logic_module.Fit(X_train, y_train)  # fit lasso model to our training data
-        y_pred = logic_module.Predict(X_test)  # make a prediction
-        mse_lasso = logic_module.MSE(y_pred, y_test)  # calculate the mean squared error of the prediction
-        print(("\nLasso MSE with Lambda={} is {}").format(val, mse_lasso))
 
 
 
