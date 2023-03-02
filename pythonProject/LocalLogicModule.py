@@ -120,6 +120,23 @@ class LocalLogicModule:
         plt.ylabel("Lasso Score")
         plt.show()  # open window displaying graph
 
+    def graph_lambda_accuracy(self, dataframe):
+        lambda_vals = [0.000001, 0.0001, 0.005, 0.01, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 1]  # set lambda.
+        x = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+        accuracy_arr = []
+        for val in lambda_vals:
+            self.lambda_val = val
+            accuracy = self.train_continuous_model_vapor_room_air(dataframe)
+            accuracy_arr.append(accuracy)
+            print(("\nLasso RSqaured Score with Lambda={} is {}").format(val, accuracy))
+
+        plt.plot(x, accuracy_arr)
+        plt.xlabel("Lambda Values")
+        plt.ylabel("Lasso Score")
+        plt.xticks(x, lambda_vals)
+        plt.show()
+
+
 
 if __name__ == "__main__":
     # loader = LoadData(r'D:\CS 421\Binary_Predictor_Data\dataframe_binary_females.xlsx')
@@ -132,11 +149,8 @@ if __name__ == "__main__":
     # print("\n\nDone\n\n")
 
     loader = LoadData(r'C:\Users\charl\Desktop\dataframe_continuous_females.xlsx')
-    learning_rate = 0.01
-    model_object = LocalLogicModule(learning_rate)
-    model_object.train_continuous_model_vapor_room_air(loader.df)
-
-    model_object.graph_continuous_lasso_accuracy(loader.df, 10)
+    model_object = LocalLogicModule(0.01)
+    model_object.graph_lambda_accuracy(loader.df)
 
     print("\n\nDone\n\n")
 
