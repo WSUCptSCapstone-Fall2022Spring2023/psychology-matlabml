@@ -9,21 +9,13 @@
 # copyright notice is kept intact.
 
 from collections import namedtuple
-import numpy as np
 from .pypl2lib import *
 
 def print_error(pypl2_file_reader_instance):
     error_message = (c_char * 256)()
     pypl2_file_reader_instance.pl2_get_last_error(error_message, 256)
     print(error_message.value)
-
-def to_array(c_array):
-    return np.ctypeslib.as_array(c_array)
-
-def to_array_nonzero(c_array):
-    a = np.ctypeslib.as_array(c_array)
-    return a[np.where(a)]
-
+    
 
 def pl2_ad(filename, channel):
 
@@ -43,7 +35,7 @@ def pl2_ad(filename, channel):
         n - total number of data points
         timestamps - tuple of fragment timestamps (one timestamp per fragment, in seconds)
         fragmentcounts - tuple of fragment counts
-        ad - tuple of raw a/d values in volts (a/d stands for analog to digital)
+        ad - tuple of raw a/d values in volts
         
         The returned data is in a named tuple object, so it can be accessed as a normal tuple: 
             >>>res = pl2_ad('data/file.pl2', 0)
@@ -118,23 +110,27 @@ def pl2_ad(filename, channel):
                                                     fragment_counts,
                                                     values)
 
+    # Close the file
+    p.pl2_close_file(handle)
+    
     #If res is 0, print error message and return 0.
     if (res == 0):
         print_error(p)
         return 0
     
-    # Close the file
-    p.pl2_close_file(handle)
-    
     #Create a named tuple called PL2Ad.
     PL2Ad = namedtuple('PL2Ad', 'adfrequency n timestamps fragmentcounts ad')
+
+    tmp_fragment_timestamps = []
+    for i in range(num_fragments_returned.value):
+        tmp_fragment_timestamps.append(fragment_timestamps[i] / file_info.m_TimestampFrequency)
     
     #Fill in and return named tuple.
     return PL2Ad(achannel_info.m_SamplesPerSecond, 
                  num_data_points_returned.value,
-                 to_array_nonzero(fragment_timestamps) / file_info.m_TimestampFrequency,
-                 to_array_nonzero(fragment_counts),
-                 to_array(values) * achannel_info.m_CoeffToConvertToUnits)
+                 tuple(tmp_fragment_timestamps),
+                 tuple([x for x in fragment_counts if x]),
+                 tuple([x*achannel_info.m_CoeffToConvertToUnits for x in values]))
 
 def pl2_spikes(filename, channel, unit = []):
     """
@@ -228,30 +224,40 @@ def pl2_spikes(filename, channel, unit = []):
                                                    units,
                                                    values)
         
+    # Close the file
+    p.pl2_close_file(handle)
+    
     #If res is 0, print error message and return 0.
     if (res == 0):
         print_error(p)
         return 0    
         
-    # Close the file
-    p.pl2_close_file(handle)
-    
     #The c_short() array called 'values' is currently a one-dimensional array of 
     #waveform samples, which isn't in volts, and it's not easy to just get one
     #waveform out of it. I want this to be converted to volts, and also be 
     #converted to a tuple of tuples that contain the waveform voltage values.
     
+    #First, convert all A/D samples in 'values' to volts
+    values = tuple([x*schannel_info.m_CoeffToConvertToUnits for x in values])
+    
     #Then, extract the waveforms from 'values' into a multi-dimensional
     #Python tuple. If there is a more 'Pythonic' way to do this, I want
     #to know about it!
-    waveforms = (to_array(values) * schannel_info.m_CoeffToConvertToUnits).reshape((num_spikes_returned.value, schannel_info.m_SamplesPerSpike))
+    waveforms = []
+    current_location = 0
+    breadth = schannel_info.m_SamplesPerSpike
+    for i in range(num_spikes_returned.value):
+        temp = values[current_location:current_location+breadth]
+        waveforms.append(temp)
+        current_location += breadth
+    waveforms = tuple(waveforms)
     
     #Create a named tuple called PL2Spikes
     PL2Spikes = namedtuple('PL2Spikes', 'n timestamps units waveforms')
     
     return PL2Spikes(num_spikes_returned.value,
-                     to_array(spike_timestamps) / file_info.m_TimestampFrequency,
-                     to_array(units),
+                     tuple(x/file_info.m_TimestampFrequency for x in spike_timestamps),
+                     tuple(x for x in units),
                      waveforms)
 
  
@@ -342,8 +348,8 @@ def pl2_events(filename, channel):
     PL2DigitalEvents = namedtuple('PL2DigitalEvents', 'n timestamps values')
     
     return PL2DigitalEvents(num_events_returned.value,
-                            to_array(event_timestamps) / file_info.m_TimestampFrequency,
-                            to_array(event_values))
+                            tuple(x/file_info.m_TimestampFrequency for x in event_timestamps),
+                            tuple(x for x in event_values))
 
 def pl2_info(filename):
     """
@@ -404,7 +410,6 @@ def pl2_info(filename):
         >>>res.spikes[2].name
         >>>'SPK03'
     """
-    
     #Create an instance of PyPL2FileReader.
     p = PyPL2FileReader()
     
@@ -421,7 +426,6 @@ def pl2_info(filename):
     file_info = PL2FileInfo()
     
     res = p.pl2_get_file_info(handle, file_info)
-
     #If res is 0, print error message and return 0.
     
     if (res == 0):
@@ -448,7 +452,7 @@ def pl2_info(filename):
             return 0       
 
         if schannel_info.m_ChannelEnabled:
-            spike_counts.append(spike_info(schannel_info.m_Channel, schannel_info.m_Name, tuple(schannel_info.m_UnitCounts)))
+            spike_counts.append(spike_info(schannel_info.m_Channel, schannel_info.m_Name.decode('ascii'), tuple(schannel_info.m_UnitCounts)))
     
     #Get channel numbers, names, and counts for all event channels with data
     for i in range(file_info.m_NumberOfDigitalChannels):
@@ -460,7 +464,7 @@ def pl2_info(filename):
             return 0        
 
         if echannel_info.m_NumberOfEvents:
-            event_counts.append(event_info(echannel_info.m_Channel, echannel_info.m_Name, echannel_info.m_NumberOfEvents))
+            event_counts.append(event_info(echannel_info.m_Channel, echannel_info.m_Name.decode('ascii'), echannel_info.m_NumberOfEvents))
 
     #Get channel numbers, names, and counts for all enabled spike channels
     for i in range(file_info.m_TotalNumberOfAnalogChannels):
@@ -472,7 +476,8 @@ def pl2_info(filename):
             return 0
         
         if achannel_info.m_ChannelEnabled:
-            ad_counts.append(ad_info(achannel_info.m_Channel, achannel_info.m_Name, achannel_info.m_NumberOfValues))
+            ad_counts.append(ad_info(achannel_info.m_Channel, achannel_info.m_Name.decode('ascii'), achannel_info.m_NumberOfValues))
+    
     
     # Close the file
     p.pl2_close_file(handle)
@@ -481,44 +486,43 @@ def pl2_info(filename):
     
     return PL2Info(tuple(spike_counts), tuple(event_counts), tuple(ad_counts))
 
-
 def pl2_comments(filename):
     """
     Reads a PL2 file and returns comments made during the recording
-
+    
     Usage:
         >>>timestamps, comments = pl2_comments(filename)
-
+    
     Args:
         filename - Full path of the file
-
+    
     Returns:
         timestamps - tuple of comment timestamps
         comments - tuple of comments
     """
-    # Create an instance of PyPL2FileReader.
+    #Create an instance of PyPL2FileReader.
     p = PyPL2FileReader()
 
-    # Verify that the file passed exists first.
-    # Open the file.
+    #Verify that the file passed exists first.
+    #Open the file.
     handle = p.pl2_open_file(filename)
 
-    # If the handle is 0, print error message and return 0.
+    #If the handle is 0, print error message and return 0.
     if (handle == 0):
         print_error(p)
         return 0
 
-    # Create instance of PL2FileInfo.
+    #Create instance of PL2FileInfo.
     file_info = PL2FileInfo()
-
+    
     res = p.pl2_get_file_info(handle, file_info)
-
-    # If res is 0, print error message and return 0.
+    
+    #If res is 0, print error message and return 0.
     if (res == 0):
         print_error(p)
-        return 0
+        return 0        
 
-        # Get information about the comments in the file
+    #Get information about the comments in the file
     num_comments = c_ulonglong()
     total_number_of_comments_bytes = c_ulonglong()
 

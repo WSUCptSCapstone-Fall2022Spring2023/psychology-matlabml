@@ -8,9 +8,10 @@ import pandas as pd
 import scipy.signal
 from scipy import signal
 from itertools import combinations
-from pypl2 import pl2_ad, pl2_info
+from pypl2 import pl2_ad, pl2_info, pl2_comments
 from statistics import fmean
 import openpyxl
+
 
 class Config:
     """This class holds info for the configuration of our data cleaning"""
@@ -24,6 +25,7 @@ class Config:
         self.sex = 'M'  # set to 'F' to process data for female models
         self.excel_sheet = r'D:\CS 421\Binary_Predictor_Data\Sex_Differences_Alcohol_SA_Cohort_#3.xlsx'
 
+
 class LoadData:
     """Class used to load a CSV file of data into a pandas dataframe for use in the logic modules"""
 
@@ -34,6 +36,14 @@ class LoadData:
         """Method for printing the dataframe to a terminal window."""
         with pd.option_context('display.max_rows', None, 'display.max_columns', None):
             print(self.df)
+
+
+class Timestamp:
+    def __init__(self, file):
+        timestamps, comments = pl2_comments(file)
+        print(timestamps)
+        for n in range(len(timestamps)):
+            print("{} {}".format(timestamps[n], comments[n]))
 
 
 class AccessData:
@@ -62,7 +72,7 @@ class AccessData:
             self.pl2_files = self.__getFileNames()
             self.preProcessData()
 
-        #print(self.dataframe.to_string())
+        # print(self.dataframe.to_string())
         self.saveDataframe()
 
     def preProcessData(self):
@@ -115,14 +125,13 @@ class AccessData:
 
         self.header = header
 
-
     def __splitSignal(self, f, signal):
         """splits an array of signal (power or coherence) values into an array of 6 arrays based on the 6 signal labels"""
-        delta = []       # range 1-4
-        theta = []       # range 5-10
-        alpha = []       # range 11-14
-        beta = []        # range 15-30
-        low_gamma = []   # range 45-65
+        delta = []  # range 1-4
+        theta = []  # range 5-10
+        alpha = []  # range 11-14
+        beta = []  # range 15-30
+        low_gamma = []  # range 45-65
         high_gamma = []  # range 70-90
 
         for i in range(len(f)):
@@ -183,7 +192,7 @@ class AccessData:
         # convert data in channels from volts to raw a/d
         ad_array = []
         for channel in channel_numbers:
-            print("Converting volts to a/d in channel {}".format(channel+1))
+            print("Converting volts to a/d in channel {}".format(channel + 1))
             ad_info = pl2_ad(filename, channel)
             ad = self.voltsToRawAD(ad_info.ad)
             ad_array.append(ad)
@@ -203,8 +212,8 @@ class AccessData:
             ad = self.__downSampling(ad, self.cfg.dwnSample, ad_info.adfrequency)
 
             # 3. Threshold filter
-            #print("Applying Threshold Filter")
-            #ad = self.__noiseArtifactsFilter(ad, self.cfg.artifactThreshold, self.cfg.onset, self.cfg.offset, ad_info.adfrequency)
+            # print("Applying Threshold Filter")
+            # ad = self.__noiseArtifactsFilter(ad, self.cfg.artifactThreshold, self.cfg.onset, self.cfg.offset, ad_info.adfrequency)
 
             cleaned_ad_array.append(ad)
             iterator += 1
@@ -219,7 +228,6 @@ class AccessData:
             f, Pxx = self.__calculateChannelPower(ad, ad_info.adfrequency)
             power_array.append((f, Pxx))
             iterator += 1
-
 
         # calculate coherence values for data
         iterator = 0
@@ -250,8 +258,6 @@ class AccessData:
 
         # Add info to dictionary
         self.dFrameDict[filename] = split_signal_array
-
-
 
     def __getFileNames(self):
         """Method for getting a list of file names from the directory pointed at by this class"""
@@ -288,7 +294,6 @@ class AccessData:
         sig = scipy.signal.filtfilt(b, a, sig)
         return sig
 
-
     def __noiseArtifactsFilter(self, sig, artifactThreshold, onset, offset, f):
         """Cleans the data for noise artifacts created by interference by sources like the rat bashing its head against the enclosure wall.
         Filter is performed by scanning the signal array for values greater than the threshold, then removing all values a fraction of a second before and after that value."""
@@ -298,10 +303,10 @@ class AccessData:
         offset = round(offset * f)
 
         # iterate through array
-        end_of_array = len(sig)-1
+        end_of_array = len(sig) - 1
         for i in range(len(sig)):
             if sig[i] >= artifactThreshold:  # if a value is greater than the threshold
-                ranges_to_remove.extend(range(i-onset, i+offset+1))
+                ranges_to_remove.extend(range(i - onset, i + offset + 1))
 
         ranges_to_remove = list(filter(lambda x: x >= 0, ranges_to_remove))
         ranges_to_remove = list(filter(lambda x: x <= end_of_array, ranges_to_remove))
@@ -326,13 +331,11 @@ class AccessData:
         return sig
 
 
-
-
-
 if __name__ == "__main__":
-    #cfg = Config()
-    #accessObj = AccessData(r'D:\CS 421\Binary_Predictor_Data', cfg)
+    # cfg = Config()
+    # accessObj = AccessData(r'D:\CS 421\Binary_Predictor_Data', cfg)
 
-    loader = LoadData(r'D:\CS 421\Binary_Predictor_Data\output.xlsx')
-    loader.printDataFrame()
+    # loader = LoadData(r'D:\CS 421\Binary_Predictor_Data\output.xlsx')
+    # loader.printDataFrame()
 
+    t = Timestamp(r'D:\CS 421\timestamp_file.pl2')
