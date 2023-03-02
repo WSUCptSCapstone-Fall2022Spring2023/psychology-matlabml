@@ -21,7 +21,7 @@ class Config:
         self.artifactThreshold = 1.5
         self.onset = 0.0125  # 25 values prior
         self.offset = 0.5  # 1000 values after
-        self.sex = 'M'  # set to 'F' to process data for female models
+        self.sex = 'A'  # set to 'F' to process data for female models and 'M' for male models. 'A' for all
         self.excel_sheet = r'D:\CS 421\Binary_Predictor_Data\Sex_Differences_Alcohol_SA_Cohort_#3.xlsx'
 
 class LoadData:
@@ -80,7 +80,7 @@ class AccessData:
 
         # iterate through all files and populate the pandas dataframe with power and coherence values
         for row in ws.iter_rows(values_only=True):
-            if row[2] == self.cfg.sex:
+            if row[2] == self.cfg.sex or self.cfg.sex == 'A':
                 for pl2_filename in self.pl2_files:
                     if pl2_filename == (row[0] + '.pl2'):
                         print("Processing file {} for Rat # {}".format(pl2_filename, row[1]))
@@ -330,8 +330,8 @@ class AccessData:
 
 
 if __name__ == "__main__":
-    #cfg = Config()
-    #accessObj = AccessData(r'D:\CS 421\Binary_Predictor_Data', cfg)
+    cfg = Config()
+    accessObj = AccessData(r'D:\CS 421\Binary_Predictor_Data', cfg)
 
     loader = LoadData(r'D:\CS 421\Binary_Predictor_Data\output.xlsx')
     loader.printDataFrame()

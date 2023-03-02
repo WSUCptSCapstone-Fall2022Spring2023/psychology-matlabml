@@ -5,7 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="37cacdca-1889-4f74-b8be-7000510817fb" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/LocalLogicModule.py" beforeDir="false" afterPath="$PROJECT_DIR$/LocalLogicModule.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Preprocessing_Module_Binary_Classifier.py" beforeDir="false" afterPath="$PROJECT_DIR$/Preprocessing_Module_Binary_Classifier.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -51,8 +51,8 @@
       <recent name="C:\Users\aidan.nunn\Documents\GitHub\Capstone\psychology-matlabml\pythonProject" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.Preprocessing_Module_Binary_Classifier">
-    <configuration name="A-D Lasso Predictor" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+  <component name="RunManager" selected="Python.LocalLogicModule">
+    <configuration name="LocalLogicModule" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="pythonProject" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -64,7 +64,7 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/A-D Lasso Predictor.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/LocalLogicModule.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -138,11 +138,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.LocalLogicModule" />
         <item itemvalue="Python.Preprocessing_Module_Binary_Classifier" />
         <item itemvalue="Python tests.Python tests for test_External_Data_Access_and_Preprocessing_Module.TestAccessData.testNoiseArtifactsFilter" />
         <item itemvalue="Python tests.Python tests for test_External_Data_Access_and_Preprocessing_Module.TestAccessData.test60hzFilter" />
         <item itemvalue="Python tests.Python tests for test_External_Data_Access_and_Preprocessing_Module.TestAccessData.testDownSampling" />
-        <item itemvalue="Python.A-D Lasso Predictor" />
       </list>
     </recent_temporary>
   </component>
