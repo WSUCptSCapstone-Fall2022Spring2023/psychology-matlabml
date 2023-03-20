@@ -7,12 +7,6 @@
     <list default="true" id="37cacdca-1889-4f74-b8be-7000510817fb" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Preprocessing_Module_Binary_Classifier.py" beforeDir="false" afterPath="$PROJECT_DIR$/Preprocessing_Module_Binary_Classifier.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pypl2/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/pypl2/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pypl2/bin/PL2FileReader.dll" beforeDir="false" afterPath="$PROJECT_DIR$/pypl2/bin/PL2FileReader.dll" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pypl2/bin/PL2FileReader64.dll" beforeDir="false" afterPath="$PROJECT_DIR$/pypl2/bin/PL2FileReader64.dll" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pypl2/bin/bin-readme.md" beforeDir="false" afterPath="$PROJECT_DIR$/pypl2/bin/bin-readme.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pypl2/pypl2api.py" beforeDir="false" afterPath="$PROJECT_DIR$/pypl2/pypl2api.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pypl2/pypl2lib.py" beforeDir="false" afterPath="$PROJECT_DIR$/pypl2/pypl2lib.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -196,6 +190,11 @@
           <url>file://$PROJECT_DIR$/pypl2/pypl2api.py</url>
           <line>499</line>
           <option name="timeStamp" value="1" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/Preprocessing_Module_Binary_Classifier.py</url>
+          <line>261</line>
+          <option name="timeStamp" value="6" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>

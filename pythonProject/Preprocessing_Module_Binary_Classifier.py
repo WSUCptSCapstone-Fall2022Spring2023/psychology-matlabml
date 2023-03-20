@@ -23,7 +23,7 @@ class Config:
         self.onset = 0.0125  # 25 values prior
         self.offset = 0.5  # 1000 values after
         self.sex = 'M'  # set to 'F' to process data for female models
-        self.excel_sheet = r'D:\CS 421\Binary_Predictor_Data\Sex_Differences_Alcohol_SA_Cohort_#3.xlsx'
+        self.excel_sheet = r'D:\CS 421\Binary_Predictor_Data_Sample\Sex_Differences_Alcohol_SA_Cohort_#3.xlsx'
 
 
 class LoadData:
@@ -94,7 +94,7 @@ class AccessData:
                 for pl2_filename in self.pl2_files:
                     if pl2_filename == (row[0] + '.pl2'):
                         print("Processing file {} for Rat # {}".format(pl2_filename, row[1]))
-                        self.__pl2ToDictionaryRow(pl2_filename, row)
+                        self.__pl2ToDictionaryRow5SecondBatches(pl2_filename, row)
 
         # Turn Dictionary into Dataframe
         self.dataframe = pd.DataFrame.from_dict(self.dFrameDict, orient='index', columns=self.header)
@@ -171,9 +171,115 @@ class AccessData:
 
         return l
 
+    def __pl2ToDictionaryRow5SecondBatches(self, filename, row):
+        """This method converts a pl2 file to a dictionary row of power and coherence data.
+        Whereas the method __pl2ToDictionaryRow() converts the entire file's data into power and coherence,
+        this method converts data in 5-second batches."""
+
+        # count the number of active channels and store their numbers
+        file_resource = pl2_info(filename)
+        channel_count = 0
+        channel_number = 0
+        channel_numbers = []
+
+        for channel in file_resource.ad:
+            if channel.n > 0:  # if a channel has count > 0 then it has data
+                channel_count += 1
+                channel_numbers.append(channel_number)
+            channel_number += 1  # update the current channel's number
+
+        print("Detected {} active channels".format(channel_count))
+
+        # convert data in channels from volts to raw a/d
+        ad_array = []
+        for channel in channel_numbers:
+            print("Converting volts to a/d in channel {}".format(channel + 1))
+            ad_info = pl2_ad(filename, channel)
+            ad = self.voltsToRawAD(ad_info.ad)
+            ad_array.append(ad)
+
+        # perform data cleaning
+        cleaned_ad_array = []
+        iterator = 1
+        for ad in ad_array:
+            print("Cleaning Channel {}".format(iterator))
+
+            # 1. 60 Hertz Filter
+            print("Applying 60hz Filter")
+            ad = self.__60HertzFilter(ad, ad_info.adfrequency)
+
+            # 2. Down-sampling
+            print("Applying Down-Sampling")
+            ad = self.__downSampling(ad, self.cfg.dwnSample, ad_info.adfrequency)
+
+            # 3. Threshold filter
+            # print("Applying Threshold Filter")
+            # ad = self.__noiseArtifactsFilter(ad, self.cfg.artifactThreshold, self.cfg.onset, self.cfg.offset, ad_info.adfrequency)
+
+            cleaned_ad_array.append(ad)
+            iterator += 1
+
+        del ad_array  # release memory of uncleaned data
+
+        # split data into 5-second batches
+        sublist_ad_array = []
+        sublist_length = int(ad_info.n / (ad_info.adfrequency * 5))
+        for ad in cleaned_ad_array:
+            sublist = []
+            for i in range(0, len(ad), sublist_length):
+                sublist.append(ad[i:i + sublist_length])
+            sublist_ad_array.append(sublist)
+
+        # calculate power values for data
+        power_array = []
+        iterator = 0
+        for channel in sublist_ad_array:
+            print("Processing Power for Channel {}".format(self.power_channel_names[iterator]))
+            iterator += 1
+            sublist = []
+            for batch in channel:
+                f, Pxx = self.__calculateChannelPower(batch, ad_info.adfrequency)
+                sublist.append((f, Pxx))
+            power_array.append(sublist)
+
+        # calculate coherence values for data
+        iterator = 0
+        combo_list = list(combinations(channel_numbers, 2))  # get combinations of each 0-indexed channel number
+        coherence_array = []
+        for combo in combo_list:
+            print("Processing Coherence for Channel Pair {}".format(self.coherence_channel_names[iterator]))
+            iterator += 1
+            ad1 = sublist_ad_array[combo[0]]
+            ad2 = sublist_ad_array[combo[1]]
+            sublist = []
+            for batch1, batch2 in zip(ad1, ad2):
+                f, Cxy = self.__calculateChannelCoherence(batch1, batch2, ad_info.adfrequency)
+                sublist.append((f, Cxy))
+            coherence_array.append(sublist)
+
+
+        # Split power signals into power bands and combine into one list
+        split_signal_array = []
+        for channel in power_array:
+            for tup in channel:
+                split_signal_array.extend(self.__splitSignal(tup[0], tup[1]))
+
+        # Split coherence signals into power bands and combine into one list
+        for channel in coherence_array:
+            for tup in channel:
+                split_signal_array.extend(self.__splitSignal(tup[0], tup[1]))
+
+        # Append Condition variable to end of array. 0 for Room Air, 1 for Vapor
+        if row[3] == 'Room Air':
+            split_signal_array.append(0)
+        if row[3] == 'Vapor':
+            split_signal_array.append(1)
+
+        # Add info to dictionary
+        self.dFrameDict[filename] = split_signal_array
+
     def __pl2ToDictionaryRow(self, filename, row):
-        """Ths method accepts a pl2 file and converts its information into a row of data corresponding to the header of
-        the pandas dataframe we're writing to."""
+        """This method converts a pl2 file to a dictionary row of power and coherence data"""
 
         # count the number of active channels and store their numbers
         file_resource = pl2_info(filename)
@@ -332,10 +438,10 @@ class AccessData:
 
 
 if __name__ == "__main__":
-    # cfg = Config()
-    # accessObj = AccessData(r'D:\CS 421\Binary_Predictor_Data', cfg)
+     cfg = Config()
+     accessObj = AccessData(r'D:\CS 421\Binary_Predictor_Data_Sample', cfg)
 
     # loader = LoadData(r'D:\CS 421\Binary_Predictor_Data\output.xlsx')
     # loader.printDataFrame()
 
-    t = Timestamp(r'D:\CS 421\timestamp_file.pl2')
+    #t = Timestamp(r'D:\CS 421\timestamp_file.pl2')
