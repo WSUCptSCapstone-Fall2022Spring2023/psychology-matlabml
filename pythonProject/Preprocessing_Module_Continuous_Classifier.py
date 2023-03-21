@@ -30,6 +30,7 @@ class Config:
         self.onset = 0.0125  # 25 values prior
         self.offset = 0.5  # 1000 values after
         self.sex = 'F'  # set to 'F' to process data for female models
+        self.training_data_directory = r'C:\Users\charl\Desktop\OneDrive_2023-02-23\SampleData'
         self.excel_sheet = r'C:\Users\charl\Downloads\Sex Differences_Alcohol SA Cohort #3 - Copy(1).xlsx'
 
 
@@ -352,7 +353,7 @@ class AccessData:
 
 if __name__ == "__main__":
     # cfg = Config()
-    # accessObj = AccessData(r'C:\Users\charl\Documents\SampleData', cfg)
+    # accessObj = AccessData(r'C:\Users\charl\Desktop\OneDrive_2023-02-23\SampleData', cfg)
     dataframe = LoadData(r'C:\Users\charl\Desktop\PreprocessedFemaleData.xlsx')
     dataframe.printDataFrame()
 
