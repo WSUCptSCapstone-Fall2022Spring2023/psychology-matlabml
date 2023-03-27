@@ -24,6 +24,7 @@ class Config:
         self.offset = 0.5  # 1000 values after
         self.sex = 'M'  # set to 'F' to process data for female models
         self.excel_sheet = r'D:\CS 421\Binary_Predictor_Data_Sample\Sex_Differences_Alcohol_SA_Cohort_#3.xlsx'
+        self.batches = 1  # set this value to 0 if you do not want 5-second batches, 1 if you do want 5-second batches
 
 
 class LoadData:
@@ -57,6 +58,7 @@ class AccessData:
         self.fType = '.pl2'  # File type we are looking for
         self.dFrameDict = {}
         self.dataframe = pandas.DataFrame()
+        self.header_length = 0
 
         # Lists of channel names to be used in the below loops
         self.power_channel_names = ['Channel 1 Power', 'Channel 2 Power', 'Channel 3 Power', 'Channel 4 Power',
@@ -67,22 +69,28 @@ class AccessData:
                                         'Coherence 4 & 5', 'Coherence 4 & 6', 'Coherence 5 & 6']
         self.band_names = [' Delta', ' Theta', ' Alpha', ' Beta', ' Low Gamma', ' High Gamma']
 
-        self.header = []
         if sDir != '':
             self.pl2_files = self.__getFileNames()
             self.preProcessData()
 
-        # print(self.dataframe.to_string())
-        self.saveDataframe()
+            # set the header and rows for the dataframe
+            self.header = []
+            if self.cfg.batches == 1:
+                self.__buildHeader5SecondBatches()
+            else:
+                self.__buildHeader()
+
+            # Turn Dictionary dFrameDicct into Dataframe
+            self.dataframe = pd.DataFrame.from_dict(self.dFrameDict, orient='index', columns=self.header)
+
+            # print(self.dataframe.to_string())
+            self.saveDataframe()
 
     def preProcessData(self):
         """Main method of this class. When called, it will populate the pandas dataframe stored in self. with all power
         and coherence values from the data files in the directory pointed at by this class."""
         print("Getting data for Lasso")
         os.chdir(self.sDir)  # change the current working directory to where our data is stored.
-
-        # set the header and rows for the dataframe
-        self.__buildHeader()
 
         # open the Excel sheet with additional info
         wb = openpyxl.load_workbook(self.cfg.excel_sheet)
@@ -94,15 +102,26 @@ class AccessData:
                 for pl2_filename in self.pl2_files:
                     if pl2_filename == (row[0] + '.pl2'):
                         print("Processing file {} for Rat # {}".format(pl2_filename, row[1]))
-                        self.__pl2ToDictionaryRow5SecondBatches(pl2_filename, row)
-
-        # Turn Dictionary into Dataframe
-        self.dataframe = pd.DataFrame.from_dict(self.dFrameDict, orient='index', columns=self.header)
-
+                        if self.cfg.batches == 1:
+                            self.__pl2ToDictionaryRow5SecondBatches(pl2_filename, row)
+                        else:
+                            self.__pl2ToDictionaryRow(pl2_filename, row)
     def saveDataframe(self):
         """Method that allows us to save our dataframe to an Excel spreadsheet. This way, we don't have to process the data every time we want to use it."""
         with pd.ExcelWriter('output.xlsx') as writer:
             self.dataframe.to_excel(writer)
+
+    def __buildHeader5SecondBatches(self):
+        """This function creates the rows and columns for our dataframe based on the amount of data in the 5-second batches."""
+
+        header = []
+
+        for i in range(0, self.header_length-1):
+            header.append(i+1)
+
+        header.append('Condition')
+
+        self.header = header
 
     def __buildHeader(self):
         """This function creates the rows and columns for our dataframe. Since the header is 216 columns, it's much easier
@@ -174,7 +193,8 @@ class AccessData:
     def __pl2ToDictionaryRow5SecondBatches(self, filename, row):
         """This method converts a pl2 file to a dictionary row of power and coherence data.
         Whereas the method __pl2ToDictionaryRow() converts the entire file's data into power and coherence,
-        this method converts data in 5-second batches."""
+        this method converts data in 5-second batches.
+        The length of the row is returned so that we can build an appropriately sized header."""
 
         # count the number of active channels and store their numbers
         file_resource = pl2_info(filename)
@@ -223,11 +243,9 @@ class AccessData:
 
         # split data into 5-second batches
         sublist_ad_array = []
-        sublist_length = int(ad_info.n / (ad_info.adfrequency * 5))
+        num_sublists = int(ad_info.n / (ad_info.adfrequency * 5))  # There should be this many sublists
         for ad in cleaned_ad_array:
-            sublist = []
-            for i in range(0, len(ad), sublist_length):
-                sublist.append(ad[i:i + sublist_length])
+            sublist = np.array_split(ad, num_sublists)
             sublist_ad_array.append(sublist)
 
         # calculate power values for data
@@ -236,11 +254,11 @@ class AccessData:
         for channel in sublist_ad_array:
             print("Processing Power for Channel {}".format(self.power_channel_names[iterator]))
             iterator += 1
-            sublist = []
+            channel_sublist = []
             for batch in channel:
                 f, Pxx = self.__calculateChannelPower(batch, ad_info.adfrequency)
-                sublist.append((f, Pxx))
-            power_array.append(sublist)
+                channel_sublist.append((f, Pxx))
+            power_array.append(channel_sublist)
 
         # calculate coherence values for data
         iterator = 0
@@ -251,32 +269,45 @@ class AccessData:
             iterator += 1
             ad1 = sublist_ad_array[combo[0]]
             ad2 = sublist_ad_array[combo[1]]
-            sublist = []
+            channel_sublist = []
             for batch1, batch2 in zip(ad1, ad2):
                 f, Cxy = self.__calculateChannelCoherence(batch1, batch2, ad_info.adfrequency)
-                sublist.append((f, Cxy))
-            coherence_array.append(sublist)
-
+                channel_sublist.append((f, Cxy))
+            coherence_array.append(channel_sublist)
 
         # Split power signals into power bands and combine into one list
         split_signal_array = []
         for channel in power_array:
+            channel_sublist = []
             for tup in channel:
-                split_signal_array.extend(self.__splitSignal(tup[0], tup[1]))
+                channel_sublist.append(self.__splitSignal(tup[0], tup[1]))
+            split_signal_array.append(channel_sublist)
 
         # Split coherence signals into power bands and combine into one list
         for channel in coherence_array:
+            channel_sublist = []
             for tup in channel:
-                split_signal_array.extend(self.__splitSignal(tup[0], tup[1]))
+                channel_sublist.append(self.__splitSignal(tup[0], tup[1]))
+            split_signal_array.append(channel_sublist)
+
+        # split_signal_array is in the order 5-second batches for channels 1-6 power, then 5-second batches for channel 1-6 coherences
+        # convert split_signal_array into one list without any sublists
+        combined_split_signal_array = []
+        for l1 in split_signal_array:
+            for l2 in l1:
+                for l3 in l2:
+                    combined_split_signal_array.append(l3)
 
         # Append Condition variable to end of array. 0 for Room Air, 1 for Vapor
         if row[3] == 'Room Air':
-            split_signal_array.append(0)
+            combined_split_signal_array.append(0)
         if row[3] == 'Vapor':
-            split_signal_array.append(1)
+            combined_split_signal_array.append(1)
+
+        self.header_length = len(combined_split_signal_array)
 
         # Add info to dictionary
-        self.dFrameDict[filename] = split_signal_array
+        self.dFrameDict[filename] = combined_split_signal_array
 
     def __pl2ToDictionaryRow(self, filename, row):
         """This method converts a pl2 file to a dictionary row of power and coherence data"""
