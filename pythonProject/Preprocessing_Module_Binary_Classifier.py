@@ -22,10 +22,9 @@ class Config:
         self.artifactThreshold = 1.5
         self.onset = 0.0125  # 25 values prior
         self.offset = 0.5  # 1000 values after
-        self.sex = 'M'  # set to 'F' to process data for female models
+        self.sex = 'A'  # set to 'F' to process data for female models or 'M' for male models, or 'A' for all sexes
         self.excel_sheet = r'D:\CS 421\Binary_Predictor_Data_Sample\Sex_Differences_Alcohol_SA_Cohort_#3.xlsx'
         self.batches = 1  # set this value to 0 if you do not want 5-second batches, 1 if you do want 5-second batches
-
 
 class LoadData:
     """Class used to load a CSV file of data into a pandas dataframe for use in the logic modules"""
@@ -38,14 +37,12 @@ class LoadData:
         with pd.option_context('display.max_rows', None, 'display.max_columns', None):
             print(self.df)
 
-
 class Timestamp:
     def __init__(self, file):
         timestamps, comments = pl2_comments(file)
         print(timestamps)
         for n in range(len(timestamps)):
             print("{} {}".format(timestamps[n], comments[n]))
-
 
 class AccessData:
     """Class used to access and process data from a directory of data files into power and coherence data that can be used
@@ -73,6 +70,9 @@ class AccessData:
             self.pl2_files = self.__getFileNames()
             self.preProcessData()
 
+            # Equalize the length of each row in the dictionary
+            self.__equalizeRows()
+
             # set the header and rows for the dataframe
             self.header = []
             if self.cfg.batches == 1:
@@ -86,6 +86,18 @@ class AccessData:
             # print(self.dataframe.to_string())
             self.saveDataframe()
 
+    def __equalizeRows(self):
+        """Since data files are of different lengths, we will find the shortest array and dock the rest to that length to avoid unequal column lengths"""
+        # find the shortest array
+        minimum = min(map(len, self.dFrameDict.values()))
+
+        # truncate all values in the dicitonary to match the min length
+        dictCopy = self.dFrameDict
+        for key in dictCopy.keys():
+            self.dFrameDict[key] = self.dFrameDict[key][0 : minimum]
+
+        self.header_length = minimum
+
     def preProcessData(self):
         """Main method of this class. When called, it will populate the pandas dataframe stored in self. with all power
         and coherence values from the data files in the directory pointed at by this class."""
@@ -97,15 +109,21 @@ class AccessData:
         ws = wb.active
 
         # iterate through all files and populate the pandas dataframe with power and coherence values
+        counter = 0
+        num_files = ws.max_row
         for row in ws.iter_rows(values_only=True):
-            if row[2] == self.cfg.sex:
+
+            if row[2] == self.cfg.sex or self.cfg.sex == 'A':
                 for pl2_filename in self.pl2_files:
                     if pl2_filename == (row[0] + '.pl2'):
+                        counter = counter + 1
+                        print("\n   Working on file {}/{}".format(counter, num_files))
                         print("Processing file {} for Rat # {}".format(pl2_filename, row[1]))
                         if self.cfg.batches == 1:
                             self.__pl2ToDictionaryRow5SecondBatches(pl2_filename, row)
                         else:
                             self.__pl2ToDictionaryRow(pl2_filename, row)
+
     def saveDataframe(self):
         """Method that allows us to save our dataframe to an Excel spreadsheet. This way, we don't have to process the data every time we want to use it."""
         with pd.ExcelWriter('output.xlsx') as writer:
@@ -113,7 +131,6 @@ class AccessData:
 
     def __buildHeader5SecondBatches(self):
         """This function creates the rows and columns for our dataframe based on the amount of data in the 5-second batches."""
-
         header = []
 
         for i in range(0, self.header_length-1):
@@ -239,11 +256,13 @@ class AccessData:
             cleaned_ad_array.append(ad)
             iterator += 1
 
+
+
         del ad_array  # release memory of uncleaned data
 
-        # split data into 5-second batches
+        # split data into 15-second batches
         sublist_ad_array = []
-        num_sublists = int(ad_info.n / (ad_info.adfrequency * 5))  # There should be this many sublists
+        num_sublists = int(ad_info.n / (ad_info.adfrequency * 30))  # There should be this many sublists
         for ad in cleaned_ad_array:
             sublist = np.array_split(ad, num_sublists)
             sublist_ad_array.append(sublist)
@@ -303,8 +322,6 @@ class AccessData:
             combined_split_signal_array.append(0)
         if row[3] == 'Vapor':
             combined_split_signal_array.append(1)
-
-        self.header_length = len(combined_split_signal_array)
 
         # Add info to dictionary
         self.dFrameDict[filename] = combined_split_signal_array
@@ -469,10 +486,10 @@ class AccessData:
 
 
 if __name__ == "__main__":
-     cfg = Config()
-     accessObj = AccessData(r'D:\CS 421\Binary_Predictor_Data_Sample', cfg)
+    cfg = Config()
+    accessObj = AccessData(r'D:\CS 421\Binary_Predictor_Data', cfg)
 
-    # loader = LoadData(r'D:\CS 421\Binary_Predictor_Data\output.xlsx')
-    # loader.printDataFrame()
+    loader = LoadData(r'D:\CS 421\Binary_Predictor_Data\output.xlsx')
+    loader.printDataFrame()
 
     #t = Timestamp(r'D:\CS 421\timestamp_file.pl2')
