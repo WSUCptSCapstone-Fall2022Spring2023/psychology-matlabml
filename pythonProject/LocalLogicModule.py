@@ -64,7 +64,7 @@ class LocalLogicModule:
 
         accuracy_arr = []
         for epoch in range(epochs):
-            print("On Epoch {} of {}".format(epoch, epochs))
+            print("On Epoch {} of {}".format(epoch+1, epochs))
             # train the model
             accuracy = self.train_binary_model_vapor_room_air(dataframe)
             accuracy_arr.append(accuracy)
@@ -82,7 +82,7 @@ if __name__ == "__main__":
     model_object = LocalLogicModule(learning_rate)
     #model_object.train_binary_model_vapor_room_air(loader.df)
 
-    model_object.graph_lasso_accuracy(loader.df, 100)
+    model_object.graph_lasso_accuracy(loader.df, 10)
 
     print("\n\nDone\n\n")
 

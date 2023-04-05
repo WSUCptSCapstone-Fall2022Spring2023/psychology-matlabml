@@ -5,20 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="37cacdca-1889-4f74-b8be-7000510817fb" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/../Sprint Reports and Videos/Spring 2023/Sprint Report 5.mkv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../Sprint Reports and Videos/Spring 2023/Sprint Report 6.mkv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../Sprint Reports and Videos/Spring 2023/sprint_report_5.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../Sprint Reports and Videos/Spring 2023/sprint_report_6.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../requirements-3.9.5.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../MVP Project Report.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/../MVP Project Report.pdf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Sprint Reports and Videos/Sprint 2023/Sprint Report 4.mkv" beforeDir="false" afterPath="$PROJECT_DIR$/../Sprint Reports and Videos/Spring 2023/Sprint Report 4.mkv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Sprint Reports and Videos/Sprint 2023/sprint_report_4.md" beforeDir="false" afterPath="$PROJECT_DIR$/../Sprint Reports and Videos/Spring 2023/sprint_report_4.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/LocalLogicModule.py" beforeDir="false" afterPath="$PROJECT_DIR$/LocalLogicModule.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Preprocessing_Module_Binary_Classifier.py" beforeDir="false" afterPath="$PROJECT_DIR$/Preprocessing_Module_Binary_Classifier.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Preprocessing_Module_Continuous_Classifier.py" beforeDir="false" afterPath="$PROJECT_DIR$/Preprocessing_Module_Continuous_Classifier.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../readme.md" beforeDir="false" afterPath="$PROJECT_DIR$/../readme.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
