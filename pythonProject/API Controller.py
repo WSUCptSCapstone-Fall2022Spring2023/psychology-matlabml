@@ -32,8 +32,8 @@ class API_Controller:
             'onset': str(cfg.onset),
             'offset': str(cfg.offset),
             'sex': cfg.sex,
-            'training_data_directory': cfg.training_data_directory,
-            'excel_sheet': cfg.excel_sheet
+            'excel_sheet': cfg.excel_sheet,
+            'batches': cfg.batches 
         }
 
         with open('config.ini', 'w') as f:
@@ -48,8 +48,8 @@ class API_Controller:
         config.onset = float(parser.get('DEFAULT', 'onset'))
         config.offset = float(parser.get('DEFAULT', 'offset'))
         config.sex = parser.get('DEFAULT', 'sex')
-        config.training_data_directory = parser.get('DEFAULT', 'training_data_directory')
         config.excel_sheet = parser.get('DEFAULT', 'excel_sheet')
+        config.batches = 1
 
 if __name__ == "__main__":
     # Initialize objects

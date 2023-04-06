@@ -21,9 +21,10 @@ class Config:
         self.artifactThreshold = 1.5
         self.onset = 0.0125  # 25 values prior
         self.offset = 0.5  # 1000 values after
-        self.sex = 'A'  # set to 'F' to process data for female models and 'M' for male models. 'A' for all
-        self.training_data_directory = r'C:\Users\charl\Desktop\OneDrive_2023-02-23\SampleData'
+        self.sex = 'F'  # set to 'F' to process data for female models and 'M' for male models. 'A' for all
         self.excel_sheet = r'D:\CS 421\Binary_Predictor_Data\Sex_Differences_Alcohol_SA_Cohort_#3.xlsx'
+        self.batches = 1 # set this value to 0 if you do not want 5-second batches, 1 if you do want 5-second batches
+
 
 class LoadData:
     """Class used to load a CSV file of data into a pandas dataframe for use in the logic modules"""

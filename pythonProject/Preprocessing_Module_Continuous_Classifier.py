@@ -30,8 +30,8 @@ class Config:
         self.onset = 0.0125  # 25 values prior
         self.offset = 0.5  # 1000 values after
         self.sex = 'F'  # set to 'F' to process data for female models
-        self.training_data_directory = r'C:\Users\charl\Desktop\OneDrive_2023-02-23\SampleData'
         self.excel_sheet = r'C:\Users\charl\Downloads\Sex Differences_Alcohol SA Cohort #3 - Copy(1).xlsx'
+        self.batches = 1 # set this value to 0 if you do not want 5-second batches, 1 if you do want 5-second batches
 
 
 class LoadData:
