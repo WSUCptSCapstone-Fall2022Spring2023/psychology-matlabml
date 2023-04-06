@@ -31,6 +31,7 @@ class Config:
         self.offset = 0.5  # 1000 values after
         self.sex = 'F'  # set to 'F' to process data for female models
         self.excel_sheet = r'C:\Users\charl\Downloads\Sex Differences_Alcohol SA Cohort #3 - Copy(1).xlsx'
+        self.condition = "Room Air" # set to "Room Air" for room air rats and "Vapor" to for vapor rats. A is for both
 
 
 class LoadData:
@@ -108,7 +109,7 @@ class AccessData:
 
         # iterate through all files and populate the pandas dataframe with power and coherence values
         for row in ws.iter_rows(values_only=True):
-            if row[2] == self.cfg.sex:
+            if row[2] == self.cfg.sex and row[3] == self.cfg.condition:
                 for pl2_filename in self.pl2_files:
                     if pl2_filename == (row[0] + '.pl2'):
                         print("Processing file {} for Rat # {}".format(pl2_filename, row[1]))
@@ -349,10 +350,10 @@ class AccessData:
 
 
 if __name__ == "__main__":
-    # cfg = Config()
-    # accessObj = AccessData(r'C:\Users\charl\Documents\SampleData', cfg)
-    dataframe = LoadData(r'C:\Users\charl\Desktop\PreprocessedFemaleData.xlsx')
-    dataframe.printDataFrame()
+    cfg = Config()
+    accessObj = AccessData(r'C:\Users\charl\Documents\SampleData', cfg)
+    # dataframe = LoadData(r'C:\Users\charl\Desktop\PreprocessedFemaleData.xlsx')
+    # dataframe.printDataFrame()
 
 
 
