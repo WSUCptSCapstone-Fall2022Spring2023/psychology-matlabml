@@ -7,7 +7,7 @@ from sklearn.linear_model import Lasso
 from sklearn.metrics import accuracy_score, r2_score
 from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import train_test_split
-from Preprocessing_Module_Binary_Classifier import *
+from Load_Data import *
 from matplotlib import pyplot as plt
 
 class LocalLogicModule:
@@ -77,7 +77,7 @@ class LocalLogicModule:
 
 
 if __name__ == "__main__":
-    loader = LoadData(r'D:\CS 421\Processed_Dataframes\dataframe_binary_30_second_batches_all_sexes.xlsx')
+    loader = LoadData(r'D:\CS_421\Processed_Dataframes\dataframe_binary_30_second_batches_all_sexes.xlsx')
     learning_rate = 0.01
     model_object = LocalLogicModule(learning_rate)
     #model_object.train_binary_model_vapor_room_air(loader.df)
