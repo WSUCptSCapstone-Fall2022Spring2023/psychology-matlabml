@@ -7,6 +7,13 @@
  - Python dependencies installed by running `pip install -r requirements-3.9.5.txt`
  - SSH Authentication setup with Kamiak
  - :brain: & :computer:
+ 
+## How to make requirements.txt
+1. Create a virtual environment locally using `python -m venv /path/to/new/virtual/environment`
+2. Activate your virtual environment using `source .env/bin/activate`
+3. `pip install` all your dependencies you need to run your python scripts
+4. Save all your dependencies in a .txt file using `pip freeze > requirements.txt`
+5. Exit the virtual environment and delete your .env file
 
 ## How to add files to kamiak
 ```bash
