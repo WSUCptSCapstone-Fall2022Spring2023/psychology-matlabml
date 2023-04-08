@@ -23,7 +23,20 @@ from .pypl2lib import PL2FileInfo, PL2AnalogChannelInfo, PL2SpikeChannelInfo, PL
 from .pypl2api import pl2_ad, pl2_spikes, pl2_events, pl2_info, pl2_comments
 
 __author__ = 'Chris Heydrick (chris@plexon.com)'
-__version__ = '1.1.0'
+__version__ = '1.3.0'
+
+# I'll put thanks to community bug fixers and feature implementers here
+__with_thanks_to__ = ['With thanks to Roland Ferger with the Pena Lab for demonstrating how to port to Python 3']
 
 # 5/24/2016 CH
 # Added 64-bit .dll support, incremented to 1.1.0
+# 8/27/2018 CH
+# pl2_ad, pl2_spikes, and pl2_events are now properly closing the .pl2 file when done
+# Fixed pl2_ad not correctly handling when ad channel first timestamp is 0
+# Incremented to 1.1.1
+# 3/8/2019 CH
+# Ported to Python 3 - no longer works with Python 2
+# Incremented to 1.2.0
+# 3/16/2021 CH
+# Added functions for getting comments from OmniPlex 1.20+
+# Incremented to 1.3.0

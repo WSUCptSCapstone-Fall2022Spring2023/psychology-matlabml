@@ -95,25 +95,21 @@ class PL2DigitalChannelInfo(Structure):
                 ("m_NumberOfEvents",c_ulonglong)]
 
 class PyPL2FileReader:
-    def __init__(self, pl2_dll_path = None):
+    def __init__(self, pl2_dll_path = 'bin'):
         """
         PyPL2FileReader class implements functions in the C++ PL2 File Reader
         API provided by Plexon, Inc.
         
         Args:
-            pl2_dll_path - path where PL2FileReader.dll is location.
-                The default value assumes the .dll files are located in the
-                'bin' directory, which is a subdirectory of the directory this
-                script is in.
-                Any file path passed is converted to an absolute path and checked
+            pl2_dll_path - path where PL2FileReader.dll is location. The default value 
+                assumes the bin folder (with the .dll inside) is in your current working
+                directory. Any file path passed is converted to an absolute path and checked
                 to see if the .dll exists there.
         
         Returns:
             None
         """
         self.platform = platform.architecture()[0]
-        if pl2_dll_path is None:
-            pl2_dll_path = os.path.join(os.path.split(__file__)[0], 'bin')
         self.pl2_dll_path = os.path.abspath(pl2_dll_path)
         
         if self.platform == '32bit':
@@ -146,7 +142,7 @@ class PyPL2FileReader:
         self.result = c_int(0)
         self.result = self.pl2_dll.PL2_OpenFile(pl2_file.encode('ascii'), byref(self.file_handle))
 
-        return self.file_handle.value
+        return self.file_handle.value    
 
     def pl2_close_file(self, file_handle):
         """
@@ -159,7 +155,7 @@ class PyPL2FileReader:
             None
         """
         
-        self.pl2_dll.PL2_CloseFile(self.file_handle)
+        self.pl2_dll.PL2_CloseFile(c_int(file_handle))
             
     def pl2_close_all_files(self):
         """
@@ -243,7 +239,7 @@ class PyPL2FileReader:
         
         Returns:
             1 - Success
-            0 - Failure        
+            0 - Failure
             The instance of PL2AnalogChannelInfo is filled with channel info
         """
         
@@ -648,6 +644,38 @@ class PyPL2FileReader:
         
         return self.result
         
+    def pl2_get_comments_info(self, file_handle, num_comments, total_number_of_comments_bytes):
+        """
+        Retreive recording comments information
+
+        Args:
+            file_handle - file handle
+            num_comments - c_ulonglong class instance
+            total_number_of_comments_bytes - c_ulonglong class instance
+
+        Returns:
+            1 - Success
+            0 - Failure
+            The class instances passed to the function are filled in with values
+        """
+        self.result = c_int()
+        self.result = self.pl2_dll.PL2_GetCommentsInfo(c_int(file_handle), byref(num_comments), byref(total_number_of_comments_bytes))
+
+        return self.result
+
+    def pl2_get_comments(self, file_handle, timestamps, comment_lengths, comments):
+        """
+        Retreive recording comments
+
+        Args:
+            file_handle - file handle
+            timestamps - c_longlong class instance
+            comment_lengths - c_ulonglong class instance
+            comments - c_char array
+        """
+        self.result = c_int()
+        self.result = self.pl2_dll.PL2_GetComments(c_int(file_handle), byref(timestamps), byref(comment_lengths), byref(comments))
+
     #PL2 data block functions purposefully not implemented.
     def pl2_read_first_data_block(self, file_handle):
         pass
@@ -681,37 +709,3 @@ class PyPL2FileReader:
         
     def pl2_get_start_stop_data_block_values(self, file_handle):
         pass
-
-    def pl2_get_comments_info(self, file_handle, num_comments, total_number_of_comments_bytes):
-        """
-        Retreive recording comments information
-
-        Args:
-            file_handle - file handle
-            num_comments - c_ulonglong class instance
-            total_number_of_comments_bytes - c_ulonglong class instance
-
-        Returns:
-            1 - Success
-            0 - Failure
-            The class instances passed to the function are filled in with values
-        """
-        self.result = c_int()
-        self.result = self.pl2_dll.PL2_GetCommentsInfo(c_int(file_handle), byref(num_comments),
-                                                       byref(total_number_of_comments_bytes))
-
-        return self.result
-
-    def pl2_get_comments(self, file_handle, timestamps, comment_lengths, comments):
-        """
-        Retreive recording comments
-
-        Args:
-            file_handle - file handle
-            timestamps - c_longlong class instance
-            comment_lengths - c_ulonglong class instance
-            comments - c_char array
-        """
-        self.result = c_int()
-        self.result = self.pl2_dll.PL2_GetComments(c_int(file_handle), byref(timestamps), byref(comment_lengths), byref(comments))
-
