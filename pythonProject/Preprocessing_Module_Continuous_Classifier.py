@@ -349,6 +349,8 @@ class AccessData:
 
 
 
+
+
 if __name__ == "__main__":
     cfg = Config()
     accessObj = AccessData(r'C:\Users\charl\Documents\SampleData', cfg)

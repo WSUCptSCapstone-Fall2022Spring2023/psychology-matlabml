@@ -5,12 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="37cacdca-1889-4f74-b8be-7000510817fb" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/../Sprint Reports and Videos/Sprint 1 Video.mkv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Sprint Reports and Videos/Sprint 2 Video.mp4" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Sprint Reports and Videos/Sprint 3 Video.mp4" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Sprint Reports and Videos/sprint_report_1.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Sprint Reports and Videos/sprint_report_2.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Sprint Reports and Videos/sprint_report_3.md" beforeDir="false" />
+      <change afterPath="$PROJECT_DIR$/Load_Data.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/LocalLogicModule.py" beforeDir="false" afterPath="$PROJECT_DIR$/LocalLogicModule.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Preprocessing_Module_Binary_Classifier.py" beforeDir="false" afterPath="$PROJECT_DIR$/Preprocessing_Module_Binary_Classifier.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../requirements-3.9.5.txt" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -56,7 +55,7 @@
     </key>
   </component>
   <component name="RunManager" selected="Python.Preprocessing_Module_Binary_Classifier">
-    <configuration name="A-D Lasso Predictor" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="LocalLogicModule" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="pythonProject" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -68,7 +67,7 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/A-D Lasso Predictor.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/LocalLogicModule.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -143,10 +142,10 @@
     <recent_temporary>
       <list>
         <item itemvalue="Python.Preprocessing_Module_Binary_Classifier" />
+        <item itemvalue="Python.LocalLogicModule" />
         <item itemvalue="Python tests.Python tests for test_External_Data_Access_and_Preprocessing_Module.TestAccessData.testNoiseArtifactsFilter" />
         <item itemvalue="Python tests.Python tests for test_External_Data_Access_and_Preprocessing_Module.TestAccessData.test60hzFilter" />
         <item itemvalue="Python tests.Python tests for test_External_Data_Access_and_Preprocessing_Module.TestAccessData.testDownSampling" />
-        <item itemvalue="Python.A-D Lasso Predictor" />
       </list>
     </recent_temporary>
   </component>
@@ -189,6 +188,28 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/pypl2/pypl2api.py</url>
+          <line>499</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/Preprocessing_Module_Binary_Classifier.py</url>
+          <line>153</line>
+          <option name="timeStamp" value="19" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/Preprocessing_Module_Binary_Classifier.py</url>
+          <line>70</line>
+          <option name="timeStamp" value="20" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/Preprocessing_Module_Binary_Classifier.py</url>
+          <line>73</line>
+          <option name="timeStamp" value="21" />
+        </line-breakpoint>
+      </breakpoints>
       <default-breakpoints>
         <breakpoint type="python-exception">
           <properties notifyOnTerminate="true" exception="BaseException">
@@ -197,5 +218,10 @@
         </breakpoint>
       </default-breakpoints>
     </breakpoint-manager>
+    <watches-manager>
+      <inline-watch fileUrl="file://$PROJECT_DIR$/Preprocessing_Module_Binary_Classifier.py" line="146">
+        <watch expression="header" language="Python" />
+      </inline-watch>
+    </watches-manager>
   </component>
 </project>
