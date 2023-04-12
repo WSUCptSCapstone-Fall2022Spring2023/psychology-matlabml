@@ -60,7 +60,7 @@ class AccessData:
         if sDir != '':
             self.pl2_files = self.__getFileNames()
             self.preProcessData()
-
+            
             self.header = []
             if self.cfg.batches == 1:
                 # Equalize the length of each row in the dictionary
