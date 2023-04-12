@@ -681,3 +681,37 @@ class PyPL2FileReader:
         
     def pl2_get_start_stop_data_block_values(self, file_handle):
         pass
+
+    def pl2_get_comments_info(self, file_handle, num_comments, total_number_of_comments_bytes):
+        """
+        Retreive recording comments information
+
+        Args:
+            file_handle - file handle
+            num_comments - c_ulonglong class instance
+            total_number_of_comments_bytes - c_ulonglong class instance
+
+        Returns:
+            1 - Success
+            0 - Failure
+            The class instances passed to the function are filled in with values
+        """
+        self.result = c_int()
+        self.result = self.pl2_dll.PL2_GetCommentsInfo(c_int(file_handle), byref(num_comments),
+                                                       byref(total_number_of_comments_bytes))
+
+        return self.result
+
+    def pl2_get_comments(self, file_handle, timestamps, comment_lengths, comments):
+        """
+        Retreive recording comments
+
+        Args:
+            file_handle - file handle
+            timestamps - c_longlong class instance
+            comment_lengths - c_ulonglong class instance
+            comments - c_char array
+        """
+        self.result = c_int()
+        self.result = self.pl2_dll.PL2_GetComments(c_int(file_handle), byref(timestamps), byref(comment_lengths), byref(comments))
+

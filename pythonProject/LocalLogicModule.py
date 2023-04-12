@@ -7,7 +7,7 @@ from sklearn.linear_model import Lasso
 from sklearn.metrics import accuracy_score, r2_score
 from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import train_test_split
-from Preprocessing_Module_Binary_Classifier import *
+from Load_Data import *
 from matplotlib import pyplot as plt
 
 class LocalLogicModule:
@@ -92,7 +92,7 @@ class LocalLogicModule:
 
         accuracy_arr = []
         for epoch in range(epochs):
-            print("On Epoch {} of {}".format(epoch, epochs))
+            print("On Epoch {} of {}".format(epoch+1, epochs))
             # train the model
             accuracy = self.train_binary_model_vapor_room_air(dataframe)
             accuracy_arr.append(accuracy)
@@ -106,6 +106,7 @@ class LocalLogicModule:
     def graph_continuous_lasso_accuracy(self, dataframe, epochs):
         """This method fits data to a model a number of times equal to the epochs value,
         and then graphs the accuracy over a series of models"""
+
 
         accuracy_arr = []
         for epoch in range(epochs):
@@ -151,6 +152,8 @@ if __name__ == "__main__":
     loader = LoadData(r'C:\Users\charl\Desktop\dataframe_continuous_females.xlsx')
     model_object = LocalLogicModule(0.01)
     model_object.graph_lambda_accuracy(loader.df)
+
+
 
     print("\n\nDone\n\n")
 
