@@ -23,7 +23,7 @@ class Config:
         self.artifactThreshold = 1.5
         self.onset = 0.0125  # 25 values prior
         self.offset = 0.5  # 1000 values after
-        self.sex = 'M'  # set to 'F' to process data for female models or 'M' for male models, or 'A' for all sexes
+        self.sex = 'A'  # set to 'F' to process data for female models or 'M' for male models, or 'A' for all sexes
         self.excel_sheet = r'D:\CS_421\Binary_Predictor_Data\Sex_Differences_Alcohol_SA_Cohort_#3.xlsx'
         self.batches = 1  # set this value to 0 if you do not want batches, 1 if you do want batches
 
