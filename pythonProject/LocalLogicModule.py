@@ -96,9 +96,21 @@ class LocalLogicModule:
 
         # fit data to the model
         print("Fitting Data")
-        self.fit(x_train, y_train)
+        self.model.fit(x_train, y_train)
 
-        return self.model.score(x_test, y_test)
+        # print model parameters
+        print("\nPrinting Model Coefficients")
+        print(self.model.coef_)
+
+        # predict on the training data
+        prediction = self.model.predict(x_train)
+        train_accuracy = sklearn.metrics.r2_score(y_train, prediction)
+
+        # predict on the testing data
+        prediction = self.model.predict(x_test)
+        test_accuracy = sklearn.metrics.r2_score(y_test, prediction)
+
+        return train_accuracy, test_accuracy
 
     def graph_binary_lasso_accuracy(self, dataframe, epochs):
         """This method fits data to a model a number of times equal to the epochs value,
@@ -140,18 +152,36 @@ class LocalLogicModule:
         """This method fits data to a model a number of times equal to the epochs value,
         and then graphs the accuracy over a series of models"""
 
-
-        accuracy_arr = []
+        test_accuracy_arr = []
+        training_accuracy_arr = []
         for epoch in range(epochs):
-            print("On Epoch {} of {}".format(epoch, epochs))
+            print("\nBuilding Model {} of {}".format(epoch+1, epochs))
             # train the model
-            accuracy = self.train_continuous_model_vapor_room_air(dataframe)
-            accuracy_arr.append(accuracy)
-            print("Accuracy: {}".format(accuracy))
+            train_accuracy, test_accuracy = self.train_continuous_model_vapor_room_air(dataframe)
+            training_accuracy_arr.append(train_accuracy)
+            test_accuracy_arr.append(test_accuracy)
+            print("Training Accuracy: {}".format(train_accuracy))
+            print("Testing Accuracy: {}".format(test_accuracy))
 
-        plt.plot(range(1, epochs+1), accuracy_arr)
+        average_training_accuracy = sum(training_accuracy_arr)/len(training_accuracy_arr)
+        print("Average Training Accuracy: {}".format(average_training_accuracy))
+
+        average_test_accuracy = sum(test_accuracy_arr)/len(test_accuracy_arr)
+        print("Average Testing Accuracy: {}".format(average_test_accuracy))
+
+        best_training_accuracy = max(training_accuracy_arr)
+        index_training = training_accuracy_arr.index(best_training_accuracy)
+        print("Best Training Accuracy: {} for model number {}".format(best_training_accuracy, index_training+1))
+
+        best_testing_accuracy = max(test_accuracy_arr)
+        index_testing = test_accuracy_arr.index(best_testing_accuracy)
+        print("Best Testing Accuracy: {} for model number {}".format(best_testing_accuracy, index_testing + 1))
+
+        plt.plot(range(1, epochs+1), test_accuracy_arr, label="Test Accuracy")
+        plt.plot(range(1, epochs+1), training_accuracy_arr, label="Training Accuracy")
+        plt.legend()
         plt.xlabel("Fit Epoch")
-        plt.ylabel("Lasso Score")
+        plt.ylabel("R2 Score")
         plt.show()  # open window displaying graph
 
     def graph_lambda_accuracy(self, dataframe):
@@ -182,10 +212,10 @@ if __name__ == "__main__":
 
     # print("\n\nDone\n\n")
 
-    loader = LoadData(r'C:\Users\charl\Desktop\dataframe_continuous_females.xlsx')
-    model_object = LocalLogicModule(0.01)
-    model_object.graph_lambda_accuracy(loader.df)
-
-
+    loader = LoadData(r'C:\Users\charl\Desktop\Data\dataframe_continuous_60s_batches_room_air_males.xlsx')
+    learning_rate = 0.001
+    model_object = LocalLogicModule(learning_rate)
+    #model_object.train_binary_model_vapor_room_air(loader.df)
+    
     print("\n\nDone\n\n")
 
