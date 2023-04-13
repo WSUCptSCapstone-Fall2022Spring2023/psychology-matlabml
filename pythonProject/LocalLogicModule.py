@@ -216,8 +216,6 @@ if __name__ == "__main__":
     learning_rate = 0.001
     model_object = LocalLogicModule(learning_rate)
     #model_object.train_binary_model_vapor_room_air(loader.df)
-
-    model_object.graph_continuous_lasso_accuracy(loader.df, 10)
-
+    
     print("\n\nDone\n\n")
 
