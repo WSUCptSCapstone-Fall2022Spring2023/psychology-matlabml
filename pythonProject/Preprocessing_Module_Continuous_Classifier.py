@@ -19,6 +19,7 @@ from statistics import fmean
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import Lasso
 from sklearn.metrics import mean_squared_error
+from API_Controller import *
 import csv
 
 
@@ -32,7 +33,7 @@ class Config:
         self.onset = 0.0125  # 25 values prior
         self.offset = 0.5  # 1000 values after
         self.sex = 'F'  # set to 'F' to process data for female models
-        self.excel_sheet = r'C:\Users\charl\Downloads\Sex Differences_Alcohol SA Cohort #3.xlsx'
+        self.excel_sheet = r'C:\Users\charl\Desktop\Data\RatData.xlsx'
         self.condition = "Vapor" # set to "Room Air" for room air rats and "Vapor" to for vapor rats. A is for both
         self.batches = 1  # set this value to 0 if you do not want batches, 1 if you do want batches
 
@@ -516,7 +517,10 @@ class AccessData:
 
 if __name__ == "__main__":
     cfg = Config()
-    accessObj = AccessData(r'C:\Users\charl\Desktop\SampleData', cfg)
+    configurator = API_Controller()
+    configurator.create_continuous_config_file()
+    configurator.update_continuous_config("continuous_config.ini", cfg)
+    accessObj = AccessData(r'C:\Users\charl\Documents\SampleData', cfg)
     # dataframe = LoadData(r'C:\Users\charl\Desktop\FemaleData.xlsx')
     # dataframe.printDataFrame()
 
