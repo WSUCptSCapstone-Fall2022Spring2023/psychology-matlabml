@@ -38,23 +38,10 @@ class LocalLogicModule:
         features.remove('Unnamed: 0')
         x = dataframe[features].values
 
-        # Split data
-        print("Splitting Data")
-        x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.1, shuffle=True)
+        # predict on the data
+        prediction = self.model.predict(x)
 
-        # print model parameters
-        print("\nPrinting Model Coefficients")
-        print(self.model.coef_)
-
-        # predict on the training data
-        prediction = self.model.predict(x_train)
-        train_accuracy = sklearn.metrics.r2_score(y_train, prediction)
-
-        # predict on the testing data
-        prediction = self.model.predict(x_test)
-        test_accuracy = sklearn.metrics.r2_score(y_test, prediction)
-
-        return train_accuracy, test_accuracy
+        return prediction
 
     def train_binary_model_vapor_room_air(self, dataframe):
         """Method which builds a model for predicting on if a rodent is exposed to room air or alcohol vapor"""
@@ -98,7 +85,7 @@ class LocalLogicModule:
 
         return train_accuracy, test_accuracy
 
-    def train_continuous_model_vapor_room_air(self, dataframe):
+    def train_continuos_model_consumption(self, dataframe):
         """Method which builds a model for predicting how much alcohol ing g\kg a rodent has consumed"""
         print("Building Alcohol Consumption Model")
 
@@ -193,7 +180,7 @@ class LocalLogicModule:
         for epoch in range(epochs):
             print("\nBuilding Model {} of {}".format(epoch+1, epochs))
             # train the model
-            train_accuracy, test_accuracy = self.train_continuous_model_vapor_room_air(dataframe)
+            train_accuracy, test_accuracy = self.train_continuos_model_consumption(dataframe)
 
             if test_accuracy > best_test:
                 best_model = self.model
@@ -233,7 +220,7 @@ class LocalLogicModule:
         accuracy_arr = []
         for val in lambda_vals:
             self.lambda_val = val
-            accuracy = self.train_continuous_model_vapor_room_air(dataframe)
+            accuracy = self.train_continuos_model_consumption(dataframe)
             accuracy_arr.append(accuracy)
             print(("\nLasso RSqaured Score with Lambda={} is {}").format(val, accuracy))
 
@@ -246,26 +233,49 @@ class LocalLogicModule:
 
 
 if __name__ == "__main__":
-    loader = LoadData(r'D:\CS_421\Processed_Dataframes\dataframe_binary_females.xlsx', r'D:\CS_421\Processed_Dataframes\dataframe_binary_males.xlsx')
-    print(loader.df.to_markdown())
-    learning_rate = 0.01
-    model_object = LocalLogicModule(learning_rate)
-    train, test = model_object.train_binary_model_vapor_room_air(loader.df)
-    print(train, test)
-    print()
 
-    loader.saveModel(model_object.model, 'model.sav')  # save as a .sav file
-
-    model_object.model = loader.loadModel('model.sav')
-
-    train, test = model_object.predict_on_dataframe(loader.df, 'Condition')
-    print(train, test)
+    """Always run this code"""
+    learning_rate = 0.01  # set the learning rate
+    model_object = LocalLogicModule(learning_rate)  # create the class which will hold the model
 
 
-    #loader = LoadData(r'C:\Users\charl\Desktop\Data\dataframe_continuous_60s_batches_room_air_males.xlsx')
-    #learning_rate = 0.001
-    #model_object = LocalLogicModule(learning_rate)
-    #model_object.train_binary_model_vapor_room_air(loader.df)
+    """run this code when training. comment it out when testing a model"""
+    #loader = LoadData(r"D:\Capstone\Processed_Dataframes\dataframe_binary_all_subjects.xlsx")  # input the addresses of each dataframe you want to train the model on
+    
+    """if you want to build one binary model, run this code"""
+    #train, test = model_object.train_binary_model_vapor_room_air(loader.df)
+    #print("Training Accuracy: {}".format(train))
+    #print("Testing Accuracy: {}",format(test))
+    #loader.saveModel(model_object.model, 'model.sav')  # save as a .sav file to the location of LocalLogicModule.py
+
+    """if you want to build one continuous model, run this code"""
+    #train, test = model_object.train_continuos_model_consumption(loader.df)
+    #print("Training Accuracy: {}".format(train))
+    #print("Testing Accuracy: {}",format(test))
+    #loader.saveModel(model_object.model, 'model.sav')  # save as a .sav file to the location of LocalLogicModule.py
+
+    """if you want to build an array of binary models, run this code
+    this code also saves the best model out of the array"""
+    #model_object.graph_binary_lasso_accuracy(loader.df, 100) # (data, number of epochs)
+
+    """if you want to build an array of continuous models, run this code
+    this code also saves the best model out of the array"""
+    #model_object.graph_continuous_lasso_accuracy(loader.df, 100) # (data, number of epochs)
+
+    """if you want to test a saved model, run this code
+    the inputted dataframe should be made up of preprocessing one .pl2 file"""
+    #dataframe = r'D:\Capstone\79_8232022.xlsx' # dataframe of one file you wish to predict on
+    #loader = LoadData(dataframe)
+    #model_object.model = loader.loadModel(r"C:\Users\aidan\Documents\Github\Capstone\psychology-matlabml\pythonProject\model.sav") # load the model by inputting the filepath to the file
+    #prediction = model_object.predict_on_dataframe(loader.df, 'Condition')  # (dataframe, target column ('Condition' for binary, 'g/kg' for continuous))
+    #print('Prediction: {}'.format(prediction))
+
+    """Notes for binary:
+    A prediction of above 0.5 for the binary means vapor, otherwise means room air
+    the prediction should be bounded between 0 and 1. If it is not, the model might
+    be faulty"""
+    """Notes for continuous
+    The prediction should be bounded from 0 to infinity"""
     
     print("\n\nDone\n\n")
 

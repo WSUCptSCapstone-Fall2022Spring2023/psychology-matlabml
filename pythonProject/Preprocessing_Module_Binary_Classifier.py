@@ -19,14 +19,16 @@ class Config:
     """This class holds info for the configuration of our data cleaning"""
 
     def __init__(self):
-        self.filterRange = [57, 63]
-        self.dwnSample = 5
+        self.filterRange = [57, 63]  # range of filtering
+        self.dwnSample = 5  # rate of downsampling
         self.artifactThreshold = 1.5
         self.onset = 0.0125  # 25 values prior
         self.offset = 0.5  # 1000 values after
         self.sex = 'A'  # set to 'F' to process data for female models or 'M' for male models, or 'A' for all sexes
-        self.excel_sheet = r'C:\Users\charl\Desktop\Data\RatData.xlsx'
-        self.batches = 1  # set this value to 0 if you do not want batches, 1 if you do want batches
+
+        self.excel_sheet = r'D:\Capstone\Binary_Predictor_Data\Sex_Differences_Alcohol_SA_Cohort_#3.xlsx'  # address of excel sheet with additional information
+
+        self.batches = 0  # set this value to 0 if you do not want batches, 1 if you do want batches
 
 class AccessData:
     """Class used to access and process data from a directory of data files into power and coherence data that can be used
@@ -492,10 +494,9 @@ class AccessData:
 
 if __name__ == "__main__":
     cfg = Config()
-    configurator = API_Controller()
-    # configurator.create_binary_config_file()
-    configurator.update_binary_config("binary_config.ini", cfg)
-    accessObj = AccessData(r'C:\Users\charl\Documents\SampleData', cfg)
+    files_folder = r'D:\Capstone'  # address of folder with .pl2 files
+    accessObj = AccessData(files_folder, cfg)
+    # the dataframe will be stored in the files_folder location named output.xlxs
 
     # loader = LoadData(r'D:\CS_421\Binary_Predictor_Data\output.xlsx')
     # loader.printDataFrame()

@@ -33,7 +33,7 @@ class Config:
         self.onset = 0.0125  # 25 values prior
         self.offset = 0.5  # 1000 values after
         self.sex = 'F'  # set to 'F' to process data for female models
-        self.excel_sheet = r'C:\Users\charl\Desktop\Data\RatData.xlsx'
+        self.excel_sheet = r"D:\Capstone\Binary_Predictor_Data\Sex_Differences_Alcohol_SA_Cohort_#3.xlsx"
         self.condition = "Vapor" # set to "Room Air" for room air rats and "Vapor" to for vapor rats. A is for both
         self.batches = 1  # set this value to 0 if you do not want batches, 1 if you do want batches
 
@@ -517,12 +517,12 @@ class AccessData:
 
 if __name__ == "__main__":
     cfg = Config()
-    configurator = API_Controller()
-    configurator.create_continuous_config_file()
-    configurator.update_continuous_config("continuous_config.ini", cfg)
-    accessObj = AccessData(r'C:\Users\charl\Documents\SampleData', cfg)
-    # dataframe = LoadData(r'C:\Users\charl\Desktop\FemaleData.xlsx')
-    # dataframe.printDataFrame()
+    files_folder = r'D:\Capstone\Binary_Predictor_Data'  # address of folder with .pl2 files
+    accessObj = AccessData(files_folder, cfg)
+    # the dataframe will be stored in the files_folder location named output.xlxs
+
+    # loader = LoadData(r'D:\CS_421\Binary_Predictor_Data\output.xlsx')
+    # loader.printDataFrame()
 
 
 
