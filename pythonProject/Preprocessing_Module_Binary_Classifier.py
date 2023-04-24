@@ -11,6 +11,7 @@ from itertools import combinations
 from pypl2 import pl2_ad, pl2_info, pl2_comments
 from statistics import fmean
 import openpyxl
+from API_Controller import *
 from Load_Data import *
 
 
@@ -24,7 +25,7 @@ class Config:
         self.onset = 0.0125  # 25 values prior
         self.offset = 0.5  # 1000 values after
         self.sex = 'A'  # set to 'F' to process data for female models or 'M' for male models, or 'A' for all sexes
-        self.excel_sheet = r'D:\CS_421\Binary_Predictor_Data\Sex_Differences_Alcohol_SA_Cohort_#3.xlsx'
+        self.excel_sheet = r'C:\Users\charl\Desktop\Data\RatData.xlsx'
         self.batches = 1  # set this value to 0 if you do not want batches, 1 if you do want batches
 
 class AccessData:
@@ -489,11 +490,13 @@ class AccessData:
 
         return sig
 
-
 if __name__ == "__main__":
     cfg = Config()
-    accessObj = AccessData(r'D:\CS_421\Binary_Predictor_Data', cfg)
+    configurator = API_Controller()
+    # configurator.create_binary_config_file()
+    configurator.update_binary_config("binary_config.ini", cfg)
+    accessObj = AccessData(r'C:\Users\charl\Documents\SampleData', cfg)
 
-    loader = LoadData(r'D:\CS_421\Binary_Predictor_Data\output.xlsx')
-    loader.printDataFrame()
+    # loader = LoadData(r'D:\CS_421\Binary_Predictor_Data\output.xlsx')
+    # loader.printDataFrame()
 
