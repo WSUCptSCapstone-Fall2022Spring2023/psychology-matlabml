@@ -6,6 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="37cacdca-1889-4f74-b8be-7000510817fb" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/LocalLogicModule.py" beforeDir="false" afterPath="$PROJECT_DIR$/LocalLogicModule.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Preprocessing_Module_Binary_Classifier.py" beforeDir="false" afterPath="$PROJECT_DIR$/Preprocessing_Module_Binary_Classifier.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -184,6 +186,28 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/pypl2/pypl2api.py</url>
+          <line>499</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/Preprocessing_Module_Binary_Classifier.py</url>
+          <line>153</line>
+          <option name="timeStamp" value="19" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/Preprocessing_Module_Binary_Classifier.py</url>
+          <line>70</line>
+          <option name="timeStamp" value="20" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/Preprocessing_Module_Binary_Classifier.py</url>
+          <line>73</line>
+          <option name="timeStamp" value="21" />
+        </line-breakpoint>
+      </breakpoints>
       <default-breakpoints>
         <breakpoint type="python-exception">
           <properties notifyOnTerminate="true" exception="BaseException">
@@ -192,5 +216,10 @@
         </breakpoint>
       </default-breakpoints>
     </breakpoint-manager>
+    <watches-manager>
+      <inline-watch fileUrl="file://$PROJECT_DIR$/Preprocessing_Module_Binary_Classifier.py" line="146">
+        <watch expression="header" language="Python" />
+      </inline-watch>
+    </watches-manager>
   </component>
 </project>
