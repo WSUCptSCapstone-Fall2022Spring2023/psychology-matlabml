@@ -494,7 +494,7 @@ class AccessData:
 
 if __name__ == "__main__":
     cfg = Config()
-    files_folder = r'D:\Capstone'  # address of folder with .pl2 files
+    files_folder = r'D:\pl2_data'  # address of folder with .pl2 files
     accessObj = AccessData(files_folder, cfg)
     # the dataframe will be stored in the files_folder location named output.xlxs
 

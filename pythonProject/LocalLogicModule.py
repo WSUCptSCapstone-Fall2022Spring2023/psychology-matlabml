@@ -266,7 +266,7 @@ if __name__ == "__main__":
     the inputted dataframe should be made up of preprocessing one .pl2 file"""
     #dataframe = r'D:\Capstone\79_8232022.xlsx' # dataframe of one file you wish to predict on
     #loader = LoadData(dataframe)
-    #model_object.model = loader.loadModel(r"C:\Users\aidan\Documents\Github\Capstone\psychology-matlabml\pythonProject\model.sav") # load the model by inputting the filepath to the file
+    #model_object.model = loader.loadModel(r"C:\Users\aidan\model.sav") # load the model by inputting the filepath to the file
     #prediction = model_object.predict_on_dataframe(loader.df, 'Condition')  # (dataframe, target column ('Condition' for binary, 'g/kg' for continuous))
     #print('Prediction: {}'.format(prediction))
 
